@@ -1,7 +1,7 @@
 /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19  Distrib 10.11.14-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: hlsvideo_release_tmp_20260503_083743
+-- Host: localhost    Database: hlsvideo_release_tmp_fixlicense_1777793368
 -- ------------------------------------------------------
 -- Server version	10.11.14-MariaDB-0ubuntu0.24.04.1
 
@@ -180,7 +180,7 @@ CREATE TABLE `site_settings` (
 LOCK TABLES `site_settings` WRITE;
 /*!40000 ALTER TABLE `site_settings` DISABLE KEYS */;
 INSERT INTO `site_settings` VALUES
-(1,'local','',20,'storage/app/videos-local',1,'',21,'','','','[]',0,0,0,0,1,'','','','','[]',0,0,0,0,1,'','','','','[]',0,0,0,0,1,'','','','','mydrive','[]',0,0,0,0,1,'[]',0,0,0,0,1,1,'[\"Clip\",\"Short\",\"Film\",\"Funny\",\"Other\"]','','',0,'','videojs','','','','','','','','','{\"maxBufferLength\":45,\"maxMaxBufferLength\":150,\"backBufferLength\":30,\"maxBufferHole\":0.5,\"startFragPrefetch\":true,\"multiServerListPosition\":\"inside-right\",\"multiServerListCss\":\"\",\"multiServerListJs\":\"\",\"thumbnailMaxWidth\":1080,\"ffmpegScaleMode\":\"auto\"}','ZUDUTE42HJS9SNUDU6QYSXW4','active','premium','{\"dark_mode\":true,\"delete_sync_storage\":true,\"embed_multi_domain\":true,\"embed_player_advanced\":true,\"embed_whitelist\":true,\"encrypt_hls\":true,\"hls_quality_2k4k\":true,\"multi_account_storage\":true,\"multi_storage\":true,\"softsub\":true,\"storage_b2\":true,\"storage_ftp\":true,\"storage_gdrive\":true,\"storage_local\":true,\"storage_r2\":true,\"storage_ttb\":true,\"watermark_rules\":true}',NULL,'vanvan.vip','2026-05-03 12:09:29','admin','$2y$10$5FdL76RdaloIqUYqs0.hq.9GVaWItixu6ws15./NW1cHudXg9wBuO','veryfast',24,2,10,0,'auto','2026-04-18 11:39:22','2026-05-03 10:09:30');
+(1,'local','',20,'storage/app/videos-local',1,'',21,'','','','[]',0,0,0,0,1,'','','','','[]',0,0,0,0,1,'','','','','[]',0,0,0,0,1,'','','','','mydrive','[]',0,0,0,0,1,'[]',0,0,0,0,1,1,'[\"Clip\",\"Short\",\"Film\",\"Funny\",\"Other\"]','','',0,'','videojs','','','','','','','','','{\"maxBufferLength\":45,\"maxMaxBufferLength\":150,\"backBufferLength\":30,\"maxBufferHole\":0.5,\"startFragPrefetch\":true,\"multiServerListPosition\":\"inside-right\",\"multiServerListCss\":\"\",\"multiServerListJs\":\"\",\"thumbnailMaxWidth\":1080,\"ffmpegScaleMode\":\"auto\"}','','trial','trial','{}',NULL,NULL,NULL,'admin','$2y$10$5FdL76RdaloIqUYqs0.hq.9GVaWItixu6ws15./NW1cHudXg9wBuO','veryfast',24,2,10,0,'auto','2026-04-18 11:39:22','2026-05-03 12:09:54');
 /*!40000 ALTER TABLE `site_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -227,7 +227,7 @@ LOCK TABLES `videos` WRITE;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'hlsvideo_release_tmp_20260503_083743'
+-- Dumping routines for database 'hlsvideo_release_tmp_fixlicense_1777793368'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -239,4 +239,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-03  8:37:44
+-- Dump completed on 2026-05-03  9:29:29
