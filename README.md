@@ -26,9 +26,6 @@ sudo chown -R www-data:www-data storage bootstrap/cache public/hls
 sudo chmod -R 775 storage bootstrap/cache public/hls
 ```
 
-6. Configure license endpoints in:
-   - `config/license_endpoints.json`
-
 ## Notes
 
 - This release ships with clean database seed (admin kept, runtime data removed).
