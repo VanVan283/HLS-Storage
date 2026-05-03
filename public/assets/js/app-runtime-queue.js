@@ -262,7 +262,7 @@ const r=activeJobResolve; activeJobResolve=null; if(r) r(d);
       const cfg=item.config||captureCurrentUploadConfig();
       const typedTitle=($('import_title').value||'').trim();
       const fallbackTitle=(item.name||'video').replace(/\.[^.]+$/,'');
-      const title=(uploadQueue.length===1 && typedTitle)?typedTitle:fallbackTitle;
+      const title=typedTitle||fallbackTitle;
       const allowedQ=['480','720','1080','1440','2160'];
       const pickedQ=(Array.isArray(cfg.hls_quality)?cfg.hls_quality:[]).map(x=>String(x||'')).filter(x=>allowedQ.includes(x));
       const safeQ=pickedQ.length?pickedQ:['720'];
