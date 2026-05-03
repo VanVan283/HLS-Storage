@@ -1,0 +1,142 @@
+HLS VIDEO SOURCE SETUP GUIDE (IONCUBE) - ENGLISH
+============================================================
+
+I) REQUIRED COMPONENTS
+------------------------------------------------------------
+- PHP 8.3.x (required)
+- ionCube Loader (required and must be loaded)
+- MySQL/MariaDB
+- FFmpeg + FFprobe
+- Composer
+- Nginx (recommended)
+
+============================================================
+II) QUICK CHECK COMMANDS
+============================================================
+Run:
+- php -v
+- php -m | grep -i ioncube
+- composer --version
+- ffmpeg -version
+- ffprobe -version
+- mysql --version
+
+If anything is missing, install it in section III.
+
+============================================================
+III) INSTALL TOOLS ON LINUX (Ubuntu)
+============================================================
+1) Update + basic packages
+sudo apt update
+sudo apt install -y nginx mysql-server ffmpeg unzip curl git
+
+2) Install PHP 8.3 + extensions
+sudo apt install -y php8.3 php8.3-fpm php8.3-cli php8.3-mysql php8.3-mbstring php8.3-xml php8.3-bcmath php8.3-gd php8.3-curl php8.3-zip
+
+2.1) Install and verify FFmpeg/FFprobe
+sudo apt install -y ffmpeg
+ffmpeg -version
+ffprobe -version
+
+If PATH is missing, set fixed paths in .env:
+FFMPEG_PATH=/usr/bin/ffmpeg
+FFPROBE_PATH=/usr/bin/ffprobe
+
+3) Install Composer
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+composer --version
+
+4) Install ionCube Loader (PHP 8.3)
+Official links:
+- https://www.ioncube.com/loaders.php
+- https://downloads.ioncube.com/loader_downloads/
+
+Linux x86_64 example:
+cd /tmp
+curl -fL -o ioncube_loaders_lin_x86-64.tar.gz https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+tar -xzf ioncube_loaders_lin_x86-64.tar.gz
+php -i | grep extension_dir
+# copy loader for PHP 8.3 into extension_dir (example /usr/lib/php/20230831)
+sudo cp ioncube/ioncube_loader_lin_8.3.so /usr/lib/php/20230831/
+# create ini
+echo "zend_extension=ioncube_loader_lin_8.3.so" | sudo tee /etc/php/8.3/mods-available/00-ioncube.ini
+sudo phpenmod 00-ioncube
+sudo systemctl restart php8.3-fpm
+php -m | grep -i ioncube
+
+============================================================
+IV) INSTALL SOURCE
+============================================================
+1) Upload source
+Example: /opt/hls-video
+
+2) Install vendor deps (if vendor not bundled)
+cd /opt/hls-video
+composer install --no-dev --optimize-autoloader
+
+3) Create .env
+cp .env.example .env
+
+4) Fill minimum .env values
+- APP_ENV=production
+- APP_DEBUG=false
+- APP_URL=https://your-domain
+- DB_HOST=127.0.0.1
+- DB_PORT=3306
+- DB_DATABASE=your_db
+- DB_USERNAME=your_db_user
+- DB_PASSWORD=your_db_pass
+- FFMPEG_PATH=ffmpeg
+- FFPROBE_PATH=ffprobe
+
+5) Import clean database
+mysql -uUSER -p DBNAME < database/hlsvideo_clean.sql
+
+Default admin login included in clean database:
+- Username: admin
+- Password: admin123
+
+6) Permissions
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+
+7) Nginx config
+- Document root must point to public/
+
+8) Restart services
+sudo systemctl restart php8.3-fpm
+sudo systemctl restart nginx
+
+============================================================
+V) WINDOWS (LOCAL TEST)
+============================================================
+Recommended: use WSL2 or Docker Desktop.
+
+Native setup links:
+- Composer: https://getcomposer.org/download/
+- FFmpeg: https://ffmpeg.org/download.html
+- MySQL: https://dev.mysql.com/downloads/
+- ionCube Loaders: https://www.ioncube.com/loaders.php
+
+Then follow section IV steps.
+
+============================================================
+VI) DOCKER
+============================================================
+If source is encoded, container must also include ionCube Loader.
+
+Basic commands:
+cd /opt/hls-video
+docker build -t hls-video:latest .
+docker run -d --name hls-video -p 8080:80 --env-file .env hls-video:latest
+
+============================================================
+VII) FINAL CHECKLIST
+============================================================
+[ ] php -v shows 8.3.x
+[ ] php -m includes ionCube Loader
+[ ] ffmpeg/ffprobe available
+[ ] admin login works
+[ ] /api/license/status returns valid JSON
+[ ] upload + HLS conversion works

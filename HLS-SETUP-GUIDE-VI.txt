@@ -1,0 +1,143 @@
+HƯỚNG DẪN CÀI ĐẶT SOURCE HLS VIDEO (IONCUBE) - TIẾNG VIỆT
+============================================================
+
+I) YÊU CẦU BẮT BUỘC
+------------------------------------------------------------
+- PHP: 8.3.x (bắt buộc)
+- ionCube Loader: phải cài và load thành công
+- MySQL/MariaDB
+- FFmpeg + FFprobe
+- Composer
+- Nginx (khuyến nghị)
+
+============================================================
+II) KIỂM TRA NHANH CÔNG CỤ
+============================================================
+Chạy:
+- php -v
+- php -m | grep -i ioncube
+- composer --version
+- ffmpeg -version
+- ffprobe -version
+- mysql --version
+
+Nếu thiếu gì thì cài theo phần III.
+
+============================================================
+III) CÀI CÔNG CỤ TRÊN LINUX (Ubuntu)
+============================================================
+1) Update + cài package cơ bản
+sudo apt update
+sudo apt install -y nginx mysql-server ffmpeg unzip curl git
+
+2) Cài PHP 8.3 + extensions
+sudo apt install -y php8.3 php8.3-fpm php8.3-cli php8.3-mysql php8.3-mbstring php8.3-xml php8.3-bcmath php8.3-gd php8.3-curl php8.3-zip
+
+2.1) Cài và kiểm tra FFmpeg/FFprobe
+sudo apt install -y ffmpeg
+ffmpeg -version
+ffprobe -version
+
+Nếu thiếu đường dẫn, dùng path cố định trong .env:
+FFMPEG_PATH=/usr/bin/ffmpeg
+FFPROBE_PATH=/usr/bin/ffprobe
+
+3) Cài Composer
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+composer --version
+
+4) Cài ionCube Loader (PHP 8.3)
+URL tải loader chính thức:
+- https://www.ioncube.com/loaders.php
+- https://downloads.ioncube.com/loader_downloads/
+
+Ví dụ cài nhanh Linux x86_64:
+cd /tmp
+curl -fL -o ioncube_loaders_lin_x86-64.tar.gz https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+tar -xzf ioncube_loaders_lin_x86-64.tar.gz
+php -i | grep extension_dir
+# copy file loader php 8.3 vào extension_dir (ví dụ /usr/lib/php/20230831)
+sudo cp ioncube/ioncube_loader_lin_8.3.so /usr/lib/php/20230831/
+# tạo ini
+echo "zend_extension=ioncube_loader_lin_8.3.so" | sudo tee /etc/php/8.3/mods-available/00-ioncube.ini
+sudo phpenmod 00-ioncube
+sudo systemctl restart php8.3-fpm
+php -m | grep -i ioncube
+
+============================================================
+IV) CÀI SOURCE
+============================================================
+1) Upload source vào server
+Ví dụ: /opt/hls-video
+
+2) Cài vendor (nếu gói không kèm vendor)
+cd /opt/hls-video
+composer install --no-dev --optimize-autoloader
+
+3) Tạo file .env (bản basic)
+cp .env.example .env
+
+4) Điền thông tin tối thiểu trong .env
+- APP_ENV=production
+- APP_DEBUG=false
+- APP_URL=https://domain-cua-ban
+- DB_HOST=127.0.0.1
+- DB_PORT=3306
+- DB_DATABASE=ten_db
+- DB_USERNAME=user_db
+- DB_PASSWORD=pass_db
+- FFMPEG_PATH=ffmpeg
+- FFPROBE_PATH=ffprobe
+
+5) Import DB clean
+mysql -uUSER -p DBNAME < database/hlsvideo_clean.sql
+
+Thông tin đăng nhập admin mặc định của DB clean:
+- Username: admin
+- Password: admin123
+
+6) Phân quyền
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+
+7) Cấu hình Nginx
+- Document root phải trỏ tới thư mục public/
+
+8) Restart service
+sudo systemctl restart php8.3-fpm
+sudo systemctl restart nginx
+
+============================================================
+V) WINDOWS (LOCAL TEST)
+============================================================
+Khuyến nghị dùng WSL2 hoặc Docker Desktop.
+
+Nếu chạy native:
+- Cài PHP 8.3
+- Cài ionCube Loader cho PHP 8.3
+- Cài Composer: https://getcomposer.org/download/
+- Cài FFmpeg: https://ffmpeg.org/download.html
+- Cài MySQL: https://dev.mysql.com/downloads/
+
+Sau đó làm tương tự phần IV.
+
+============================================================
+VI) DOCKER
+============================================================
+Source có Dockerfile, nhưng nếu source encoded thì container cũng phải có ionCube Loader.
+
+Lệnh cơ bản:
+cd /opt/hls-video
+docker build -t hls-video:latest .
+docker run -d --name hls-video -p 8080:80 --env-file .env hls-video:latest
+
+============================================================
+VII) CHECKLIST CUỐI
+============================================================
+[ ] php -v là 8.3.x
+[ ] php -m có ionCube Loader
+[ ] ffmpeg/ffprobe chạy được
+[ ] login admin OK
+[ ] /api/license/status trả JSON OK
+[ ] upload + convert HLS OK
