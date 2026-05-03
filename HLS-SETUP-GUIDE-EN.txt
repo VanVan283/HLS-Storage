@@ -98,8 +98,9 @@ Default admin login included in clean database:
 - Password: admin123
 
 6) Permissions
-sudo chown -R www-data:www-data storage bootstrap/cache
-sudo chmod -R 775 storage bootstrap/cache
+sudo mkdir -p storage/logs storage/app storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache public/hls
+sudo chown -R www-data:www-data storage bootstrap/cache public/hls
+sudo chmod -R 775 storage bootstrap/cache public/hls
 
 7) Nginx config
 - Document root must point to public/

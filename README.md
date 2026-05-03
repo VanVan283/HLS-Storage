@@ -13,12 +13,20 @@ Cloud Video Platform for import/upload, HLS processing, embed playback, and mult
 ## Quick Setup
 
 1. Clone source and install dependencies
-2. Copy env template:
-   - `.env.example` -> `.env`
+2. Prepare env:
+   - nếu chưa có `.env`, copy từ `.env.example` (hoặc dùng `.env` mẫu trong release package)
 3. Configure database in `.env`
 4. Import database:
    - `hlsvideo_database.sql`
-5. Configure license endpoints in:
+5. Set permissions để tránh HTTP 500:
+
+```bash
+sudo mkdir -p storage/logs storage/app storage/framework/cache storage/framework/sessions storage/framework/views public/hls bootstrap/cache
+sudo chown -R www-data:www-data storage bootstrap/cache public/hls
+sudo chmod -R 775 storage bootstrap/cache public/hls
+```
+
+6. Configure license endpoints in:
    - `config/license_endpoints.json`
 
 ## Notes

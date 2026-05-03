@@ -98,8 +98,9 @@ Thông tin đăng nhập admin mặc định của DB clean:
 - Password: admin123
 
 6) Phân quyền
-sudo chown -R www-data:www-data storage bootstrap/cache
-sudo chmod -R 775 storage bootstrap/cache
+sudo mkdir -p storage/logs storage/app storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache public/hls
+sudo chown -R www-data:www-data storage bootstrap/cache public/hls
+sudo chmod -R 775 storage bootstrap/cache public/hls
 
 7) Cấu hình Nginx
 - Document root phải trỏ tới thư mục public/
