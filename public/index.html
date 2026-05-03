@@ -1,0 +1,1460 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HLS STORAGE</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <link rel="stylesheet" href="/assets/matdash/b7d2ec1f1ba66131.css" />
+  <link rel="stylesheet" href="/assets/matdash/4ac48e3f28f94dff.css" />
+  <style>
+    /* bridge: giữ HTML hiện tại nhưng dùng full token + palette từ Matdash */
+    body{margin:0;background:var(--background);color:var(--color-link);font-family:Manrope,Inter,Segoe UI,Arial,sans-serif}
+    body.dark-mode{--background:#121a2c;--card:#1a2236;--sidebar:#1a2236;--color-link:#e2e8f0;--color-dark:#f8fafc;--color-darklink:#94a3b8;--color-defaultBorder:#2b354f;--color-lightprimary:#25314a;--color-primary:#5d87ff;--color-primary-emphasis:#a5b4fc}
+    body.dark-mode .side,body.dark-mode .card,body.dark-mode .top,body.dark-mode .stat-card,body.dark-mode .import-box,body.dark-mode .mode-panel,body.dark-mode .player-wrap,body.dark-mode .logs,body.dark-mode .video-list-wrap,body.dark-mode .hero-banner,body.dark-mode .health-card,body.dark-mode .log-stat,body.dark-mode .log-item,body.dark-mode .account-item,body.dark-mode .account-meta-item,body.dark-mode .storage-option,body.dark-mode .file-picker,body.dark-mode .category-manage-wrap,body.dark-mode .player-modal-card,body.dark-mode .bg-job-badge{background:#1a2236!important;border-color:#2b354f!important;color:#e2e8f0!important}
+    body.dark-mode .page-head,body.dark-mode .import-box-title.section-head,body.dark-mode .video-list-head,body.dark-mode .source-tab.active,body.dark-mode .source-tab,body.dark-mode .menu-group,body.dark-mode .stat-label,body.dark-mode .cat-badge{background:#25314a!important;border-color:#2b354f!important;color:#e2e8f0!important}
+    body.dark-mode .side button{background:#1f2940!important;color:#cbd5e1!important;border-color:#2b354f!important}
+    body.dark-mode .side button .nav-ic{background:#25314a!important;color:#a5b4fc!important}
+    body.dark-mode .side button:hover,body.dark-mode .side button.active{background:#25314a!important;color:#fff!important;border-color:#5d87ff!important}
+    body.dark-mode .side button:hover .nav-ic,body.dark-mode .side button.active .nav-ic{background:#5d87ff!important;color:#fff!important}
+    body.dark-mode input,body.dark-mode select,body.dark-mode textarea,body.dark-mode progress{background:#1f2940!important;color:#e2e8f0!important;border-color:#2b354f!important}
+    body.dark-mode .video-row,body.dark-mode .video-list-head,body.dark-mode .video-item,body.dark-mode .log-item.ok,body.dark-mode .log-item.error{background:#1a2236!important;color:#e2e8f0!important;border-color:#2b354f!important}
+    body.dark-mode .log-panel,body.dark-mode .log-table-wrap{background:#1a2236!important;border-color:#2b354f!important}
+    body.dark-mode .log-table-head{background:#25314a!important;color:#cbd5e1!important;border-color:#2b354f!important}
+    body.dark-mode .video-pagination{background:#1a2236!important;border-color:#2b354f!important}
+    body.dark-mode .video-pagination button{background:#25314a!important;color:#cbd5e1!important;border:1px solid #2b354f!important}
+    body.dark-mode .video-pagination button.active{background:#5d87ff!important;color:#fff!important;border-color:#5d87ff!important}
+    body.dark-mode .video-pagination .meta{color:#94a3b8!important}
+    body.dark-mode .muted,body.dark-mode .video-meta,body.dark-mode .stat-note,body.dark-mode .account-sub,body.dark-mode .usage-text,body.dark-mode .health-meta,body.dark-mode .breadcrumb a,body.dark-mode .breadcrumb span{color:#94a3b8!important}
+    body.dark-mode .soft,body.dark-mode .btn-mini.soft{background:#25314a!important;color:#a5b4fc!important;border-color:#2b354f!important}
+    body.dark-mode .btn-mini.default{background:#312e81!important;color:#c7d2fe!important;border-color:#4338ca!important}
+    body.dark-mode .btn-mini.test{background:#14323f!important;color:#a5f3fc!important;border-color:#155e75!important}
+    body.dark-mode .btn-mini.connect{background:#1e3a8a!important;color:#bfdbfe!important;border-color:#3b82f6!important}
+    body.dark-mode .btn-mini.usage{background:#365314!important;color:#d9f99d!important;border-color:#65a30d!important}
+    body.dark-mode .btn-mini.delete,body.dark-mode .danger{background:#4a2330!important;color:#fecdd3!important;border-color:#9f1239!important}
+    body.dark-mode .chip,body.dark-mode .mini-badge,body.dark-mode .pill{background:#25314a!important;border-color:#2b354f!important;color:#a5b4fc!important}
+    body.dark-mode .preset-summary-card{background:linear-gradient(180deg,#1f2940 0%,#1a2236 100%)!important;border-color:#2b354f!important}
+    body.dark-mode .preset-summary-item{background:#1a2236!important;border-color:#2b354f!important}
+    body.dark-mode .preset-summary-title,body.dark-mode .preset-summary-value{color:#f8fafc!important}
+    body.dark-mode .preset-summary-label{color:#94a3b8!important}
+    body.dark-mode .category-manage-wrap{background:linear-gradient(180deg,#1f2940 0%,#1a2236 100%)!important;border-color:#2b354f!important}
+    body.dark-mode .category-chip{background:linear-gradient(135deg,#25314a 0%,#1f2940 100%)!important;border-color:#374151!important;color:#e9d5ff!important;box-shadow:none!important}
+    body.dark-mode .category-chip .x{background:#1a2236!important;color:#c4b5fd!important;box-shadow:inset 0 0 0 1px #374151!important}
+    body.dark-mode .category-chip .x:hover{background:#7c3aed!important;color:#fff!important;box-shadow:none!important}
+    body.dark-mode .pri{background:#5d87ff!important;color:#fff!important}
+    body.dark-mode .logo,body.dark-mode .platform-icon,body.dark-mode .storage-icon,body.dark-mode .video-thumb{background:#1f2940!important;border-color:#2b354f!important;box-shadow:none!important}
+    body.dark-mode .page-head h1,body.dark-mode .import-box-title,body.dark-mode .video-title,body.dark-mode .account-title,body.dark-mode .health-title,body.dark-mode h1,body.dark-mode h2,body.dark-mode h3,body.dark-mode h4{color:#f8fafc!important}
+    body.dark-mode .menu-label,body.dark-mode .toggle-state,body.dark-mode .account-meta-label{color:#cbd5e1!important}
+    body.dark-mode .usage-bar{background:#25314a!important}
+    .app-shell{display:flex;width:100%;min-height:100vh}.app-shell.auth-hidden{display:none}
+    .page-wrapper{min-width:0;flex:1}
+    .main{min-width:0;width:100%}
+    .app{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+    .side{background:var(--sidebar);border-right:1px solid var(--color-defaultBorder);padding:16px;position:sticky;top:0;height:100vh;width:270px;min-width:270px;flex-shrink:0;display:flex;flex-direction:column}
+    .logo{font-weight:800;font-size:22px;color:var(--color-dark);margin:4px 8px 16px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#ecfeff);border:1px solid #bfdbfe;box-shadow:0 10px 24px rgba(37,99,235,.14), inset 0 1px 0 rgba(255,255,255,.9)}
+    .logo .logo-icon{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:17px;box-shadow:0 10px 22px rgba(29,78,216,.35)}
+    .logo .logo-text{display:flex;flex-direction:column;line-height:1.05}
+    .logo .logo-text b{font-size:20px;background:linear-gradient(90deg,#1d4ed8,#0f766e);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .logo .logo-text small{font-size:10px;font-weight:700;color:#0f766e;letter-spacing:.1em;text-transform:uppercase}
+    .menu-group{margin-bottom:12px;border:1px solid var(--color-defaultBorder);border-radius:12px;padding:8px;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,.04)}
+    .menu-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--color-darklink);padding:2px 8px 8px}
+    .menu-list{display:flex;flex-direction:column;gap:6px}
+    .side button{width:100%;text-align:left;background:#fff;color:var(--color-link);padding:10px 10px;border-radius:10px;border:1px solid var(--color-defaultBorder);transition:all .2s ease-in-out;font-weight:700;display:flex;align-items:center;gap:8px}
+    .side button .dot{display:none}
+    .side button .nav-ic{width:26px;height:26px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:var(--color-lightprimary);color:var(--color-primary);font-size:13px;flex-shrink:0}
+    .side button:hover,.side button.active{background:var(--color-lightprimary);color:var(--color-primary);border-color:color-mix(in oklab,var(--color-primary)32%,var(--color-defaultBorder));transform:translateX(2px)}
+    .side button:hover .nav-ic,.side button.active .nav-ic{background:var(--color-primary);color:#fff}
+    .page-wrapper{margin-left:0!important}
+    .main{padding:20px}
+    .page-head{display:none;align-items:center;justify-content:space-between;gap:12px;background:var(--color-lightprimary);border:none;border-radius:16px;padding:18px 22px;margin-bottom:14px;overflow:hidden}
+    .page-head h1{margin:0 0 8px;font-size:24px;color:var(--color-dark);font-weight:800}
+    .breadcrumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.breadcrumb a,.breadcrumb span{font-size:13px;color:var(--color-charcoal);line-height:1}.breadcrumb-sep{width:7px;height:7px;border-radius:999px;background:var(--color-dark)}
+    .top,.card,.stat-card{background:var(--card);border:1px solid var(--color-defaultBorder);border-radius:10px;box-shadow:var(--shadow-md)}
+    .top{padding:14px 16px;margin-bottom:14px;display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%}
+    .top h1{margin:0;color:var(--color-dark);font-size:26px;font-weight:700}.sub{font-size:13px;color:var(--color-darklink)}
+    .top-right{display:flex;gap:10px;align-items:center}.avatar{width:38px;height:38px;border-radius:999px;background:var(--color-lightprimary);color:var(--color-primary);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .hero{display:grid;grid-template-columns:1.35fr .65fr;gap:14px;margin-bottom:14px}.hero-banner{padding:24px;overflow:hidden;position:relative;background:radial-gradient(100% 707.08% at 0% 0%, #15CEBD22 0%, #548AFE22 33.82%, #E02FD622 72.12%, #FDB54E22 100%)}
+    .hero-banner:after{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:999px;background:linear-gradient(135deg,#ffffff55,#ffffff10)}
+    .hero-banner h2{font-size:30px;margin:0 0 8px;color:var(--color-dark);position:relative;z-index:1}.hero-banner p{margin:0;color:var(--color-darklink);max-width:560px;position:relative;z-index:1}
+    .mini-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}.stat-card{padding:16px;position:relative;overflow:hidden}.stat-card:before{content:'';position:absolute;right:-18px;top:-18px;width:70px;height:70px;border-radius:999px;background:var(--color-lightprimary)}.stat-label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--color-darklink);margin-bottom:8px;position:relative}.stat-value{font-size:28px;font-weight:700;color:var(--color-dark);position:relative}.stat-note{font-size:12px;color:var(--color-darklink);margin-top:6px;position:relative}
+    .grid{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}
+    .grid.library-layout{grid-template-columns:2fr 1fr}
+    .card{padding:16px;margin-bottom:14px}
+    .card h3{font-size:20px;color:var(--color-dark);margin:0 0 12px}
+    .field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;color:var(--color-link);margin-bottom:6px}
+    input,select,textarea,button{font:inherit}
+    input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--color-defaultBorder);border-radius:10px;background:#fff;color:var(--color-link);transition:border-color .2s, box-shadow .2s}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 4px color-mix(in oklab,var(--color-primary)12%,transparent)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btns{display:flex;gap:8px;flex-wrap:wrap}
+    .import-panel{padding:0;background:transparent;border:none;box-shadow:none;margin-bottom:14px}
+    .import-layout{display:grid;grid-template-columns:1fr 2fr;gap:14px}
+    .import-col{display:flex;flex-direction:column;gap:12px}
+    .import-box{border:1px solid var(--color-defaultBorder);border-radius:12px;padding:14px;background:#fff}
+    .import-box-title{font-size:15px;font-weight:800;color:var(--color-dark);margin-bottom:10px}
+    .import-box-title.section-head{display:block;padding:8px 10px;border-radius:10px;margin:-2px -2px 10px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+    .source-tabs{display:flex;gap:8px;margin-bottom:12px}.source-tab{padding:10px 14px;border-radius:10px;border:1px solid var(--color-defaultBorder);background:#fff;color:var(--color-link);font-weight:700;display:inline-flex;align-items:center;gap:8px}.source-tab.active{background:var(--color-lightprimary);color:var(--color-primary);border-color:color-mix(in oklab,var(--color-primary)28%,white)}.subtitle-switch{margin-left:auto;position:relative;min-width:112px;justify-content:flex-start;padding:8px 48px 8px 12px}.subtitle-switch::before{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);width:28px;height:16px;border-radius:99px;background:#cbd5e1;transition:all .2s ease}.subtitle-switch::after{content:'';position:absolute;right:26px;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:all .2s ease}.subtitle-switch.active::before{background:var(--color-primary)}.subtitle-switch.active::after{right:14px}.source-pane{display:none}.source-pane.active{display:block}
+    .ui-icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:13px;line-height:1;flex-shrink:0}
+    .switch-row{display:flex;align-items:center;gap:10px}
+    .toggle-switch{position:relative;width:58px;height:32px;border-radius:999px;border:none;background:#dbe4f0;cursor:pointer;transition:all .2s ease}
+    .toggle-switch::after{content:'';position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:999px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15);transition:all .2s ease}
+    .toggle-switch.on{background:var(--color-primary)}
+    .toggle-switch.on::after{left:30px}
+    .toggle-switch:disabled,.source-tab:disabled,.soft:disabled,.pri:disabled{opacity:.45;cursor:not-allowed;pointer-events:none;filter:grayscale(.15)}
+    .trial-locked{opacity:.5;pointer-events:none;filter:grayscale(.12)}
+    .preset-premium-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 6px;border-radius:999px;background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:800;border:1px solid #ddd6fe}
+    .video-list-wrap,.video-row,.video-actions,.library-filters{pointer-events:auto!important;opacity:1!important;filter:none!important}
+    .toggle-state{font-size:13px;font-weight:700;color:var(--color-link)}
+    button{cursor:pointer}
+    .pri{background:var(--color-primary);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700;box-shadow:0 8px 18px color-mix(in oklab,var(--color-primary)24%,transparent)}
+    .soft{background:var(--color-lightprimary);color:var(--color-primary);border:none;border-radius:10px;padding:10px 14px;font-weight:700}
+    .danger{background:var(--color-lighterror);color:var(--color-error-emphasis);border:none;border-radius:10px;padding:10px 14px;font-weight:700}
+    .pri:hover,.soft:hover,.danger:hover{transform:translateY(-1px);filter:saturate(1.02)}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;background:var(--color-lightprimary);border:1px solid color-mix(in oklab,var(--color-primary)20%,white);border-radius:999px;color:var(--color-primary)}
+    .storage-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .storage-option{position:relative;display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--color-defaultBorder);border-radius:14px;background:#fff;cursor:pointer;transition:all .2s ease;min-height:76px}
+    .storage-option input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+    .storage-option:hover{border-color:color-mix(in oklab,var(--color-primary)30%,var(--color-defaultBorder));box-shadow:var(--shadow-md)}
+    .storage-option input:checked + .storage-icon{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .storage-option input:checked ~ .storage-text .storage-name{color:var(--color-primary)}
+    .storage-option input:checked ~ .storage-text .storage-sub{color:var(--color-primary-emphasis)}
+    .storage-option:has(input:checked){background:color-mix(in oklab,var(--color-primary)7%,white);border-color:var(--color-primary);box-shadow:0 0 0 2px color-mix(in oklab,var(--color-primary)22%,white),0 8px 18px color-mix(in oklab,var(--color-primary)14%,transparent)}
+    .storage-option:has(input:checked)::after{content:'✓';position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:999px;background:var(--color-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900}
+    .storage-icon{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--color-lightprimary);color:var(--color-primary);font-weight:800;border:1px solid color-mix(in oklab,var(--color-primary)12%,white);font-size:12px;flex-shrink:0;overflow:hidden}
+    .storage-icon img{width:18px;height:18px;object-fit:contain;display:block}
+    .storage-text{display:flex;flex-direction:column;gap:2px}.storage-name{font-size:12px;font-weight:800;color:var(--color-dark);line-height:1.15}.storage-sub{font-size:10px;color:var(--color-darklink);line-height:1.15}
+    .file-picker{border:1px dashed #93c5fd;border-radius:12px;padding:14px;background:#f8fbff;text-align:center}
+    .file-picker-cloud{display:block;color:#2563eb;font-size:44px;line-height:1;margin:0 auto 10px;cursor:pointer}
+    .file-picker-btn{display:block;margin:0 auto;align-items:center;gap:8px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;padding:9px 14px;font-weight:800;cursor:pointer}
+    .file-picker-list{margin-top:10px;font-size:12px;color:var(--color-darklink);max-height:120px;overflow:auto;text-align:left}
+    .video-item{border:1px solid var(--color-defaultBorder);border-radius:12px;padding:12px;background:#fff;margin-bottom:10px;transition:box-shadow .2s,border-color .2s}.video-item:hover{box-shadow:var(--shadow-md);border-color:color-mix(in oklab,var(--color-primary)18%,var(--color-defaultBorder))}
+    .video-list-wrap{border:1px solid var(--color-defaultBorder);border-radius:14px;overflow:hidden;background:#fff}
+    .video-list-head{display:grid;grid-template-columns:1.8fr .9fr 1fr;gap:8px;align-items:center;background:var(--color-lightprimary);padding:10px 12px;font-size:12px;font-weight:800;color:var(--color-primary)}
+    .video-grid-9{grid-template-columns:46px minmax(220px,1.1fr) 120px 100px 140px 110px 150px 90px 90px 110px 220px !important;column-gap:12px}
+    .video-list-head>div{display:block;text-align:left}
+    .video-list-head .head-center{text-align:center}
+    .video-list-head .head-right{text-align:right}
+    .video-list-head.video-grid-9>div:nth-child(3),
+    .video-list-head.video-grid-9>div:nth-child(4),
+    .video-list-head.video-grid-9>div:nth-child(5),
+    .video-list-head.video-grid-9>div:nth-child(6),
+    .video-list-head.video-grid-9>div:nth-child(7),
+    .video-list-head.video-grid-9>div:nth-child(8),
+    .video-list-head.video-grid-9>div:nth-child(9),
+    .video-list-head.video-grid-9>div:nth-child(10){text-align:center}
+    .video-row.video-grid-9>div:first-child{display:flex;align-items:center;justify-content:center}
+    .video-row.video-grid-9>div:nth-child(3),
+    .video-row.video-grid-9>div:nth-child(4),
+    .video-row.video-grid-9>div:nth-child(5),
+    .video-row.video-grid-9>div:nth-child(6),
+    .video-row.video-grid-9>div:nth-child(7),
+    .video-row.video-grid-9>div:nth-child(8),
+    .video-row.video-grid-9>div:nth-child(9),
+    .video-row.video-grid-9>div:nth-child(10){display:flex;align-items:center;justify-content:center;text-align:center}
+    .video-row{display:grid;grid-template-columns:1.8fr .9fr 1fr;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid var(--color-defaultBorder)}
+    .video-main{display:flex;align-items:center;gap:10px;min-width:0}.video-thumb{width:64px;height:40px;border-radius:8px;background:#eaf1ff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden}.video-thumb img{width:100%;height:100%;object-fit:cover}
+    .video-title{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.video-meta{font-size:11px;color:var(--color-darklink)}
+    .mobile-video-meta{display:none}
+    .video-col{font-size:12px;color:var(--color-link)}
+    .video-col.center{display:flex;align-items:center;justify-content:center;text-align:center}
+    .video-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:nowrap;white-space:nowrap;min-width:0;padding-left:6px}
+    .cat-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#ede9fe;color:#5b21b6;font-size:12px;font-weight:800;border:1px solid #ddd6fe}
+    .icon-edit-btn{border:none;background:transparent;padding:0 2px;margin-left:6px;color:#7c3aed;font-size:14px;cursor:pointer;line-height:1}
+    .video-pagination{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:14px;border-top:1px solid var(--color-defaultBorder);background:#fff}
+    .video-pagination button{border:none;border-radius:10px;padding:8px 12px;background:#eef2ff;color:#3730a3;font-weight:800;cursor:pointer}
+    .video-pagination button.active{background:#4f46e5;color:#fff}
+    .video-pagination button:disabled{opacity:.5;cursor:not-allowed}
+    .video-pagination .meta{font-size:12px;color:var(--color-darklink);margin:0 6px}
+    .log-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+    .log-stat{border:1px solid var(--color-defaultBorder);border-radius:12px;background:#fff;padding:10px 12px}
+    .log-two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .log-panel{border:1px solid var(--color-defaultBorder);border-radius:14px;background:#fff;padding:12px;min-width:0}
+    .log-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px}
+    .log-table-wrap{border:1px solid var(--color-defaultBorder);border-radius:12px;overflow:hidden;background:#fff}
+    .log-table-head{display:grid;grid-template-columns:88px minmax(110px,130px) minmax(0,1fr) minmax(120px,150px);gap:8px;align-items:center;background:var(--color-lightprimary);padding:10px 12px;font-size:12px;font-weight:800;color:var(--color-primary);min-width:0}
+    .log-table-head>div{text-align:center;min-width:0}
+    .log-list{display:block;min-width:0}
+    .log-item{display:grid;grid-template-columns:88px minmax(110px,130px) minmax(0,1fr) minmax(120px,150px);gap:10px;align-items:start;padding:10px 12px;border-top:1px solid var(--color-defaultBorder);background:#fff;min-width:0}
+    .log-item>div{text-align:center;min-width:0}
+    .log-item .log-main{text-align:left;min-width:0;overflow:hidden}
+    .log-item .video-col{min-width:0;overflow:hidden;word-break:break-word;overflow-wrap:anywhere}
+    .log-item .log-main .video-title,.log-item .log-main .video-meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .log-item.error .log-main .video-meta{white-space:normal;overflow:visible;text-overflow:clip;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;line-height:1.45;word-break:break-word;overflow-wrap:anywhere}
+    .log-list .log-item:first-child{border-top:none}
+    .log-item.error{background:#fff7f7;border-color:#fecaca}
+    .log-item.ok{background:#f8fffb;border-color:#bbf7d0}
+    .health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px}
+    .health-card{border:1px solid var(--color-defaultBorder);border-radius:12px;background:#fff;padding:10px 12px}
+    .health-title{font-size:12px;font-weight:800;color:var(--color-dark);display:flex;align-items:center;gap:6px}
+    .health-meta{font-size:11px;color:var(--color-darklink);margin-top:6px}
+    .health-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;padding:4px 8px;border-radius:999px;margin-top:8px}
+    .health-badge.ok{background:#dcfce7;color:#166534}
+    .health-badge.warn{background:#fee2e2;color:#991b1b}
+    .health-badge.off{background:#e5e7eb;color:#374151}
+    .muted{font-size:12px;color:var(--color-darklink)}
+    .player-wrap,.logs{border:1px solid var(--color-defaultBorder);background:#fff;border-radius:12px;padding:12px}
+    #videoPlayer{width:100%;max-height:420px;background:#000;border-radius:10px}
+    .player-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:9999;padding:24px}
+    .player-modal.show{display:flex}
+    .player-modal-card{width:min(980px,100%);background:#fff;border-radius:16px;border:1px solid var(--color-defaultBorder);box-shadow:0 30px 90px rgba(2,6,23,.28);padding:14px}
+    .player-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    #videoPlayerModal{width:100%;max-height:65vh;background:#000;border-radius:12px}
+    .player-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+    .player-info-grid .full{grid-column:1 / -1}
+    .inline-copy{display:flex;gap:8px;align-items:center;min-width:0}.inline-copy>*:first-child{flex:1 1 auto;min-width:0}
+    .player-settings-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}
+    .player-settings-split>div{min-width:0}
+    .player-settings-card{margin:0;padding:12px;border:1px solid #dbe7ff;border-radius:14px;background:#f8fbff;height:100%;align-self:start}
+    .custom-player-grid{display:grid;grid-template-columns:1fr;gap:10px}
+    .custom-player-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .config-video-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:12px;align-items:start}
+    .config-video-layout .left,.config-video-layout .right{display:flex;flex-direction:column;gap:12px;min-width:0}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700}.ok{background:var(--color-lightsuccess);color:var(--color-success-emphasis)} .bad{background:var(--color-lighterror);color:var(--color-error-emphasis)}
+    .bg-job-badge{display:none;position:fixed;right:18px;bottom:18px;z-index:9998;padding:10px 12px;border-radius:12px;background:#fff;color:var(--color-primary);border:1px solid color-mix(in oklab,var(--color-primary)24%,white);font-size:12px;min-width:320px;max-width:min(86vw,420px);box-shadow:var(--shadow-md)}
+    .bg-job-badge .t{font-weight:800;line-height:1.3}
+    .bg-job-badge .m{margin-top:4px;color:var(--color-darklink);font-size:11px;line-height:1.35;white-space:pre-line}
+    .bg-job-badge .p{height:6px;background:#edf2ff;border-radius:999px;overflow:hidden;margin-top:8px}
+    .bg-job-badge .p>span{display:block;height:100%;background:var(--color-primary);width:0%}
+    .bg-job-badge.show{display:block}
+    .auth-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#eff6ff,#eef2ff,#f0f9ff);display:none;align-items:center;justify-content:center;z-index:10000;padding:20px}.auth-overlay.show{display:flex}.auth-card{width:min(430px,92vw);background:#fff;border-radius:20px;border:1px solid #dbe7ff;box-shadow:0 28px 70px rgba(29,78,216,.18);padding:22px}.auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:10px}.auth-brand .ic{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2563eb,#06b6d4);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900}.auth-title{font-size:24px;font-weight:800;color:var(--color-dark);margin:0 0 4px}.auth-sub{font-size:12px;color:var(--color-darklink);margin-bottom:14px}
+    .settings-account-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .mode-panel{background:#f8fbff;border:1px solid #dbe7ff;border-radius:14px;padding:10px}
+    .account-list{display:flex;flex-direction:column;gap:10px}
+    .account-item{border:1px solid var(--color-defaultBorder);border-radius:16px;background:#fff;padding:14px;box-shadow:0 10px 22px rgba(2,6,23,.05)}.account-item.disabled{opacity:.56;background:#f8fafc;border-style:dashed}
+    .account-item-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+    .account-title-wrap{display:flex;align-items:center;gap:10px;min-width:0}
+    .platform-icon{width:32px;height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:#fff;box-shadow:inset 0 0 0 1px var(--color-defaultBorder);flex-shrink:0;overflow:hidden}
+    .platform-icon img{width:18px;height:18px;object-fit:contain;display:block}
+    .account-title{font-size:14px;font-weight:800;color:var(--color-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .account-sub{font-size:12px;color:var(--color-darklink);margin-top:4px;line-height:1.45}
+    .badge-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    .mini-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;background:var(--color-lightprimary);color:var(--color-primary)}
+    .mini-badge.default{background:#ede9fe;color:#5b21b6}
+    .mini-badge.ok{background:var(--color-lightsuccess);color:var(--color-success-emphasis)}
+    .mini-badge.warn{background:#fff1f2;color:#be123c}
+    .mini-badge.idle{background:#f1f5f9;color:#475569}
+    .account-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}
+    .account-meta-item{padding:8px 10px;border-radius:10px;background:#f8fafc;border:1px solid #eef2f7}
+    .account-meta-label{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--color-darklink);margin-bottom:4px}
+    .account-meta-value{font-size:12px;color:var(--color-link);word-break:break-word}
+    .usage-wrap{margin-top:8px}
+    .usage-bar{height:10px;border-radius:999px;background:#e5e7eb;overflow:hidden;display:flex}
+    .usage-used{background:#111827;height:100%}
+    .usage-free{background:#22c55e;height:100%}
+    .usage-free.warn{background:#ef4444}
+    .usage-text{font-size:11px;color:var(--color-darklink);margin-top:4px}
+    .account-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .config-section-title{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--color-dark);font-size:14px;margin-bottom:8px}
+    .config-section-title .ic{width:24px;height:24px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:#eef2ff;color:#3730a3;font-size:13px}
+    .category-manage-wrap{border:1px solid #e5e7eb;border-radius:12px;padding:12px;background:linear-gradient(180deg,#ffffff 0%,#fcfcff 100%)}
+    .category-input-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+    .category-chip-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-height:30px}
+    .category-chip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,#f5f3ff 0%,#eef2ff 100%);color:#4c1d95;font-size:12px;font-weight:800;border:1px solid #ddd6fe;box-shadow:0 8px 18px rgba(124,58,237,.08);min-width:0}
+    .category-chip-main{display:flex;align-items:center;gap:8px;min-width:0}
+    .category-chip-dot{width:10px;height:10px;border-radius:999px;background:linear-gradient(135deg,#8b5cf6,#6366f1);box-shadow:0 0 0 4px rgba(139,92,246,.12);flex-shrink:0}
+    .category-chip-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .category-chip .x{border:none;background:#ffffff;color:#7c3aed;font-size:12px;line-height:1;cursor:pointer;padding:0;width:24px;height:24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #ddd6fe;flex-shrink:0}
+    .category-chip .x:hover{background:#7c3aed;color:#fff;box-shadow:none}
+    .preset-summary-card{border:1px solid #dbe7ff;border-radius:14px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);padding:12px;display:flex;flex-direction:column;gap:10px}
+    .preset-summary-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+    .preset-summary-title{font-size:13px;font-weight:800;color:var(--color-dark);display:flex;align-items:center;gap:8px}
+    .preset-summary-title .dot{width:8px;height:8px;border-radius:999px;background:#22c55e;box-shadow:0 0 0 4px #dcfce7}
+    .preset-summary-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe}
+    .preset-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .preset-summary-item{border:1px solid #e5e7eb;border-radius:10px;background:#fff;padding:8px 10px;min-width:0}
+    .preset-summary-label{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--color-darklink);margin-bottom:3px}
+    .preset-summary-value{font-size:12px;font-weight:800;color:var(--color-dark);line-height:1.3;word-break:break-word}
+    .preset-summary-empty{font-size:12px;color:var(--color-darklink);padding:2px 0}
+    .mode-toggle-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .config-mini-tabs{display:flex;gap:8px;flex-wrap:nowrap;margin-bottom:12px}
+    .config-mini-tab{flex:1 1 0;border:1px solid var(--color-defaultBorder);background:#fff;color:var(--color-link);padding:8px 10px;border-radius:999px;font-weight:800;cursor:pointer;text-align:center;white-space:nowrap}
+    .config-mini-tab.active{background:var(--color-lightprimary);color:var(--color-primary);border-color:color-mix(in oklab,var(--color-primary)25%,var(--color-defaultBorder))}
+    #section-config .settings-account-grid{align-items:start;gap:12px !important}
+    #section-config .settings-account-grid > div{display:block}
+    #section-config[data-config-current="basic"] .settings-account-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+    #section-config[data-config-current="basic"] .settings-account-grid > div{display:block !important}
+    #section-config[data-config-current="video"] .settings-account-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+    #section-config[data-config-current="video"] .settings-account-grid > div{display:contents !important}
+    #section-config[data-config-current="video"] #cfg_ffmpeg_panel{grid-column:1 / span 1;grid-row:1}
+    #section-config[data-config-current="video"] #hls_buffer_panel{grid-column:1 / span 1;grid-row:2;align-self:start}
+    #section-config[data-config-current="video"] #delete_sync_panel{grid-column:1 / span 1;grid-row:3}
+    #section-config[data-config-current="video"] #player_settings_panel{grid-column:2 / span 2;grid-row:1 / span 3;align-self:start}
+    #section-config[data-config-current="advanced"] .settings-account-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+    #section-config[data-config-current="advanced"] .settings-account-grid > div{display:block !important}
+    #section-config .config-group{width:100% !important;max-width:none !important}
+    .mode-toggle-chip{min-width:0;align-items:center}
+    .mode-toggle-chip .account-title-wrap{min-width:0}
+    .mode-toggle-chip .account-title-wrap span:last-child{font-size:12px;font-weight:800;line-height:1.2;word-break:break-word}
+    .upload-config-options{display:flex;flex-direction:column;gap:12px}
+    .upload-config-options .row{gap:12px;margin:0}
+    .upload-config-options .field{margin:0}
+    .upload-config-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0}
+    .upload-config-row + .upload-config-row{margin-top:12px}
+    .upload-config-row .field{margin:0}
+    .btn-mini{border:1px solid var(--color-defaultBorder);border-radius:10px;padding:7px 10px;font-size:12px;font-weight:700;line-height:1;cursor:pointer;transition:all .2s ease}
+    .btn-mini.soft{background:var(--color-lightprimary);color:var(--color-primary);border-color:color-mix(in oklab,var(--color-primary)18%,var(--color-defaultBorder))}
+    .btn-mini.test{background:#ecfeff;color:#155e75;border-color:#a5f3fc}
+    .btn-mini.connect{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
+    .btn-mini.default{background:#ede9fe;color:#5b21b6;border-color:#ddd6fe}
+    .btn-mini.usage{background:#ecfccb;color:#365314;border-color:#bef264}
+    .btn-mini.delete{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+    .btn-mini:hover{transform:translateY(-1px)}
+    progress{width:100%;height:12px}
+    @media(max-width:1400px){.storage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:1100px){
+      body{overflow-x:hidden}
+      .app,.app-shell{grid-template-columns:1fr}
+      .app-shell{flex-direction:column}
+      .side{height:auto;position:relative;width:100%;min-width:0;padding:10px}
+      .side .menu-group{display:none}
+      .side.menu-open .menu-group{display:block}
+      .side .menu-group{padding:6px}
+      .side button{padding:9px 8px;font-size:13px}
+      .main{padding:10px}
+      .card{padding:12px}
+      .hero-banner{padding:14px}
+      .hero-banner h2{font-size:22px}
+      .stat-value{font-size:22px}
+      .hero,.stat-grid,.grid,.row,.import-layout,.settings-account-grid,.account-meta,.log-summary{grid-template-columns:1fr}
+      .library-filters{grid-template-columns:1fr 1fr !important;align-items:stretch}
+      .health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .log-item{grid-template-columns:1fr;gap:8px}
+      .log-two-col{grid-template-columns:1fr}
+      .log-table-head{display:none}
+      .log-table-wrap{border-radius:10px}
+      .storage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .mode-toggle-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+      .player-settings-split{grid-template-columns:1fr !important}
+      .custom-player-row-2{grid-template-columns:1fr !important}
+      .config-video-layout{grid-template-columns:1fr !important}
+      .player-settings-card{height:auto}
+      .storage-option{min-height:64px;padding:9px 10px}
+      .storage-name{font-size:11px}
+      .storage-sub{font-size:9px}
+      .page-wrapper{margin-left:0!important}
+      .video-list-wrap{overflow-x:hidden}
+      .video-list-head.video-grid-9{display:none}
+      .video-row.video-grid-9{display:grid;grid-template-columns:1fr !important;gap:8px;padding:12px;position:relative}
+      .video-row.video-grid-9>div:first-child{position:absolute;top:10px;right:10px;z-index:2}
+      .video-row.video-grid-9>div:nth-child(3),
+      .video-row.video-grid-9>div:nth-child(4),
+      .video-row.video-grid-9>div:nth-child(5),
+      .video-row.video-grid-9>div:nth-child(6),
+      .video-row.video-grid-9>div:nth-child(7),
+      .video-row.video-grid-9>div:nth-child(8),
+      .video-row.video-grid-9>div:nth-child(9),
+      .video-row.video-grid-9>div:nth-child(10){display:none !important}
+      .video-row.video-grid-9>div:nth-child(2),
+      .video-row.video-grid-9>div:nth-child(10),
+      .video-row.video-grid-9>div:nth-child(11){display:flex !important;justify-content:flex-start !important;text-align:left !important}
+      .video-row.video-grid-9 .video-actions{display:flex !important;justify-content:flex-start !important;flex-wrap:wrap !important}
+      .video-actions{justify-content:flex-start;flex-wrap:wrap;gap:6px}
+      .video-actions button{min-height:34px}
+      .video-main{padding-right:28px}
+      .btn-mini,.soft,.pri,.danger{padding:8px 10px;font-size:12px}
+      .player-modal{padding:8px}
+      .player-modal-card{padding:10px;max-height:92vh;overflow:auto}
+      #videoPlayerModal{max-height:50vh}
+      .player-info-grid{grid-template-columns:1fr}
+      .bg-job-badge{left:10px;right:10px;max-width:none;min-width:0}
+    }
+    @media(max-width:700px){
+      .log-item.error .log-main .video-meta{-webkit-line-clamp:4}
+      .storage-grid,.health-grid{grid-template-columns:1fr}
+      .library-filters{grid-template-columns:1fr !important}
+      .mode-toggle-grid{grid-template-columns:1fr !important}
+      .mode-toggle-chip{padding:10px 12px}
+      .mode-toggle-chip .toggle-switch{transform:scale(.9);transform-origin:right center}
+      .top{grid-template-columns:1fr;row-gap:8px}
+      .top-right{justify-content:flex-start}
+      .btns{gap:6px}
+      .side{padding:8px}
+      .side .logo{margin:0;font-size:18px;padding:8px 10px}
+      .logo{margin:0 0 10px;font-size:18px;padding:8px 10px}
+      .logo .logo-text b{font-size:17px}
+      .logo .logo-text small{font-size:9px}
+      .side .logo .logo-text small{display:none}
+      .side .logo{justify-content:space-between}
+      .side .logo::after{content:'☰';display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:#fff;color:#1d4ed8;font-size:16px;font-weight:900;box-shadow:inset 0 0 0 1px #bfdbfe}
+      .page-head{padding:12px 14px}
+      .page-head h1{font-size:20px}
+      .import-box-title.section-head,.card h3{font-size:16px}
+      .file-picker{padding:10px}
+      .file-picker-cloud{font-size:34px}
+      .video-thumb{width:100%;height:160px;border-radius:10px}
+      .video-main{flex-direction:column;align-items:flex-start}
+      .video-title{white-space:normal}
+      .mobile-video-meta{display:block}
+      .account-item-head,.category-input-row{flex-direction:column;align-items:stretch}
+      .badge-row{justify-content:flex-start}
+      .account-actions{display:grid;grid-template-columns:1fr 1fr}
+      .account-actions .btn-mini{width:100%;text-align:center;justify-content:center}
+      .player-modal-head{align-items:flex-start;flex-direction:column}
+      .bg-job-badge{left:10px;right:10px;max-width:none;min-width:0}
+
+      /* Mobile: tab Cấu hình gọn + dễ bấm */
+      #section-config .settings-account-grid{grid-template-columns:1fr !important;gap:10px !important}
+      #section-config[data-config-current="advanced"] .settings-account-grid{grid-template-columns:1fr !important}
+      #section-config .row{grid-template-columns:1fr !important;gap:10px !important}
+      #section-config [style*="grid-template-columns:1fr 1fr 1fr"],
+      #section-config [style*="grid-template-columns:1fr 1.3fr .9fr .9fr auto"],
+      #section-config [style*="grid-template-columns:repeat(2,minmax(0,1fr))"],
+      #section-config [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
+      #section-config [style*="flex-wrap:nowrap"]{flex-wrap:wrap !important}
+      #section-config .btns{width:100%;justify-content:stretch}
+      #section-config .btns .soft,
+      #section-config .btns .pri,
+      #section-config .btns .danger{flex:1 1 auto;min-height:38px}
+      #section-config .config-section-title{font-size:13px;line-height:1.35;word-break:break-word}
+      #section-config .switch-row{justify-content:space-between;flex-wrap:wrap;gap:8px}
+      #section-config textarea{min-height:88px}
+      #section-config .field[style*="min-width:220px"]{min-width:0 !important;flex:1 1 auto !important}
+      .settings-account-grid{grid-template-columns:1fr !important;gap:12px !important}
+      #section-config[data-config-current="basic"] .settings-account-grid,
+      #section-config[data-config-current="advanced"] .settings-account-grid,
+      #section-config[data-config-current="video"] .settings-account-grid{grid-template-columns:1fr !important}
+      #section-config[data-config-current="basic"] .settings-account-grid > div,
+      #section-config[data-config-current="advanced"] .settings-account-grid > div,
+      #section-config[data-config-current="video"] .settings-account-grid > div{display:block !important}
+      #section-config[data-config-current="advanced"] .row,
+      #section-config[data-config-current="advanced"] .custom-player-grid,
+      #section-config[data-config-current="advanced"] .custom-player-row-2,
+      #section-config[data-config-current="advanced"] .player-info-grid{grid-template-columns:1fr !important;display:grid !important}
+      #section-config[data-config-current="advanced"] .field,
+      #section-config[data-config-current="advanced"] .field.full,
+      #section-config[data-config-current="advanced"] .category-manage-wrap,
+      #section-config[data-config-current="advanced"] textarea,
+      #section-config[data-config-current="advanced"] select,
+      #section-config[data-config-current="advanced"] input{max-width:100% !important;min-width:0 !important}
+      .player-settings-split{grid-template-columns:1fr !important}
+      .config-mini-tabs{display:flex;gap:8px;flex-wrap:nowrap;width:100%;overflow:auto}
+      .config-mini-tab{flex:1 1 0;padding:9px 8px;font-size:12px;min-height:40px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.25;white-space:nowrap}
+      #section-config .settings-account-grid > div{min-width:0}
+    }
+  </style>
+</head>
+<body>
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-brand"><div class="ic">🔐</div><div><h3 class="auth-title">Admin Login</h3><div class="auth-sub">Đăng nhập để vào trang quản trị.</div></div></div>
+      <div class="field"><label>Tài khoản</label><input id="auth_username" placeholder="admin" /></div>
+      <div class="field"><label>Mật khẩu</label><input id="auth_password" type="password" placeholder="••••••" /></div>
+      <div class="btns"><button class="pri" type="button" onclick="adminLoginSubmit()">Đăng nhập</button></div>
+      <div id="auth_error" class="muted" style="margin-top:8px;color:#dc2626"></div>
+    </div>
+  </div>
+  <div id="appShell" class="app-shell auth-hidden flex w-full min-h-screen bg-background">
+    <aside class="side">
+      <div class="logo"><span class="logo-icon">☁️</span><span class="logo-text"><b>HLS STORAGE</b><small>Cloud Video Platform</small></span></div>
+
+      <div class="menu-group">
+        <div class="menu-label" id="i18n-menu-dashboard">Dashboard</div>
+        <div class="menu-list">
+          <button id="nav-overview" onclick="goPage('overview')"><span class="nav-ic">🏠</span><span id="i18n-nav-overview">Tổng quan</span></button>
+          <button id="nav-history" onclick="goPage('history')"><span class="nav-ic">📜</span><span id="i18n-nav-history">Logs</span></button>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <div class="menu-label" id="i18n-menu-video">Video</div>
+        <div class="menu-list">
+          <button id="nav-import" onclick="goPage('import')"><span class="nav-ic">⬆️</span><span id="i18n-nav-import">Import / Upload Video</span></button>
+          <button id="nav-library" onclick="goPage('library')"><span class="nav-ic">🎞️</span><span id="i18n-nav-library">Danh sách Video</span></button>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <div class="menu-label" id="i18n-menu-system">System</div>
+        <div class="menu-list">
+          <button id="nav-settings" onclick="goPage('settings')"><span class="nav-ic">🗄️</span><span id="i18n-nav-settings">Lưu Trữ</span></button>
+          <button id="nav-config" onclick="goPage('config')"><span class="nav-ic">⚙️</span><span id="i18n-nav-config">Cấu Hình</span></button>
+          <button id="nav-account" onclick="goPage('account')"><span class="nav-ic">👤</span><span id="i18n-nav-account">Tài Khoản</span></button>
+        </div>
+      </div>
+    <div style="margin-top:auto;padding-top:10px">
+      <div id="license-config-version" style="margin-bottom:6px;font-size:11px;opacity:.7;text-align:center">Version v1.0.0</div>
+      <button class="danger" onclick="logoutAdmin()"><span class="nav-ic" style="background:#dc2626;color:#fff">⏻</span><span id="i18n-logout">Đăng xuất</span></button>
+    </div></aside>
+
+    <div class="page-wrapper flex w-full">
+    <main class="main w-full">
+      <section class="page-head" id="page-header">
+        <div>
+          <h1 id="page-header-title">Tổng quan</h1>
+          <div class="breadcrumb">
+            <a href="/app">Home</a>
+            <div class="breadcrumb-sep"></div>
+            <span id="page-header-crumb">Tổng quan</span>
+          </div>
+        </div>
+      </section>
+      <section class="hero" id="section-hero">
+        <div class="hero-banner card" style="padding:22px 24px;border-radius:22px;background:linear-gradient(135deg,rgba(93,135,255,.14),rgba(59,130,246,.08) 42%,rgba(255,255,255,.98));border:1px solid rgba(93,135,255,.16);box-shadow:0 18px 42px rgba(37,99,235,.08);position:relative;overflow:hidden">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+            <div style="max-width:760px">
+              <div id="i18n-hero-badge" style="display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(37,99,235,.1);color:#1d4ed8;font-size:12px;font-weight:800;margin-bottom:12px">☁️ DASHBOARD TỔNG QUAN</div>
+              <h2 id="i18n-hero-title" style="margin:0 0 10px;font-size:28px;line-height:1.15">Tổng quan hệ thống</h2>
+              <p id="i18n-hero-desc" style="margin:0;color:var(--color-darklink);font-size:14px;line-height:1.8;max-width:680px">Quản lý nhanh toàn bộ luồng upload, lưu trữ và phát video.</p>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;position:relative;z-index:5">
+              <a id="lang-vi" class="soft" href="?lang=vi" style="padding:8px 12px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none"><img src="https://flagcdn.com/w20/vn.png" alt="VI" style="width:18px;height:13px;border-radius:2px;object-fit:cover">VI</a>
+              <a id="lang-en" class="soft" href="?lang=en" style="padding:8px 12px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none"><img src="https://flagcdn.com/w20/us.png" alt="EN" style="width:18px;height:13px;border-radius:2px;object-fit:cover">EN</a>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:16px;display:flex;flex-direction:column;justify-content:space-between;gap:12px;overflow:hidden;position:relative">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <img src="/assets/welcome-icon.jpg" alt="welcome" style="width:56px;height:56px;border-radius:16px;object-fit:cover;border:1px solid #dbe7ff;box-shadow:0 10px 22px rgba(37,99,235,.12)">
+              <div>
+                <div id="welcome_user_text" style="font-weight:800;color:var(--color-dark);margin-bottom:4px;font-size:18px">Welcome, admin!</div>
+                <div id="welcome_time_text" class="muted" style="font-size:13px;line-height:1.6">Đang tải thời gian...</div>
+              </div>
+            </div>
+            <div id="license_badge_overview" class="chip" style="width:max-content;background:#fef3c7;color:#92400e;border-color:#fde68a">Trial</div>
+          </div>
+          <div id="ov-preset" class="muted" style="font-size:13px;line-height:1.6">Chúc anh một ngày làm việc hiệu quả ✨</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div class="btns" style="gap:16px"><button type="button" id="support_telegram_btn" title="Telegram support" style="background:none;border:none;padding:0"><img src="https://cdn.simpleicons.org/telegram" alt="Telegram" style="width:30px;height:30px"></button><button type="button" id="support_facebook_btn" title="Website" style="background:none;border:none;padding:0"><span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:999px;background:#2563eb;color:#fff"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a15 15 0 0 1 0 18"></path><path d="M12 3a15 15 0 0 0 0 18"></path></svg></span></button></div>
+            <button type="button" id="dark_mode_toggle" class="soft" style="padding:8px 12px" title="Dark mode">🌙</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="stat-grid" id="section-stats">
+        <div class="stat-card">
+          <div class="stat-label"><span class="ui-icon">🖥️</span> CPU hệ thống</div>
+          <div class="stat-value" id="stat-cpu">--</div>
+          <div class="stat-note" id="stat-cpu-note">Mức sử dụng CPU hiện tại</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><span class="ui-icon">🧠</span> RAM hệ thống</div>
+          <div class="stat-value" id="stat-ram">--</div>
+          <div class="stat-note" id="stat-ram-note">Mức sử dụng RAM hiện tại</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><span class="ui-icon">💾</span> DiskDrive server</div>
+          <div class="stat-value" id="stat-disk">--</div>
+          <div class="stat-note" id="stat-disk-note">Mức sử dụng ổ đĩa hệ thống</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><span class="ui-icon">🎬</span> Tổng video</div>
+          <div class="stat-value" id="stat-videos">0</div>
+          <div class="stat-note">Tất cả video trong thư viện</div>
+        </div>
+      </section>
+
+      <section class="card" id="section-overview-summary" style="display:none">
+        <h3 class="card-title">📊 Trung tâm điều khiển</h3>
+        <div class="settings-account-grid" style="margin-top:0">
+          <div class="field mode-panel" style="margin:0;padding:20px;border-radius:20px;background:linear-gradient(135deg,rgba(93,135,255,.12),rgba(124,58,237,.06) 55%,rgba(255,255,255,.88));border:1px solid rgba(93,135,255,.16);box-shadow:0 14px 34px rgba(37,99,235,.08)">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
+              <div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="display:inline-grid;place-items:center;width:38px;height:38px;border-radius:14px;background:#e0e7ff;color:#4338ca;font-size:18px">⚙️</span><div style="font-weight:900;color:var(--color-dark);font-size:16px">Preset upload mặc định</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+                <span class="pill ok" style="white-space:nowrap;box-shadow:0 6px 16px rgba(34,197,94,.16)">Đang áp dụng</span>
+                <button class="soft" onclick="goPage('config')" style="padding:10px 14px;border-radius:12px">Chỉnh preset</button>
+              </div>
+            </div>
+            <div id="ov-preset-summary" class="muted" style="font-size:13px;line-height:1.6;margin-bottom:4px"></div>
+          </div>
+          <div class="field mode-panel" style="margin:0;padding:18px;border-radius:20px;background:linear-gradient(135deg,rgba(236,253,245,.96),rgba(239,246,255,.96) 55%,rgba(255,255,255,.98));border:1px solid rgba(16,185,129,.12);box-shadow:0 16px 38px rgba(15,23,42,.08);position:relative;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+              <div style="font-weight:900;color:var(--color-dark);font-size:15px">🧪 Tool hệ thống</div>
+              <span class="pill" id="systemStatusBadge">Đang kiểm tra...</span>
+            </div>
+            <div id="systemStatus" class="muted">Đang tải...</div>
+          </div>
+        </div>
+        <div class="field mode-panel" style="margin-top:12px">
+          <div style="font-weight:800;color:var(--color-dark);font-size:14px;margin-bottom:8px">🗂️ Storage Check</div>
+          <div id="healthCheckBoard" class="muted">Đang tải...</div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <div style="grid-column:1 / -1">
+          <section class="import-panel" id="section-import">
+            <div class="import-layout">
+              <div class="import-col" style="grid-column:span 1">
+                <div class="import-box">
+                  <div class="import-box-title section-head" data-i18n-text="Video source">Nguồn video</div>
+                  <div class="source-tabs">
+                    <button id="tab-link" class="source-tab" onclick="chooseSourceTab('link')" type="button"><span class="ui-icon">🔗</span>Chọn từ link</button>
+                    <button id="tab-file" class="source-tab active" onclick="chooseSourceTab('file')" type="button"><span class="ui-icon">📁</span>Chọn video từ máy</button>
+                    <button id="subtitle_toggle" class="source-tab subtitle-switch" type="button" onclick="toggleSubtitleMode()">Subtitle</button>
+                  </div>
+                  <div id="pane-link" class="source-pane active">
+                    <div class="field"><label>🔗 Link video</label><input id="import_link" placeholder="https://..." /></div>
+                  </div>
+                  <div id="pane-file" class="source-pane">
+                    <div class="field"><label>📁 Chọn file video từ máy</label>
+                      <div class="file-picker">
+                        <input id="upload_file" type="file" accept="video/*" multiple style="display:none" />
+                        <div class="file-picker-cloud" onclick="$('upload_file')?.click()" title="Chọn file video">📤</div>
+                        <button type="button" class="file-picker-btn" onclick="$('upload_file')?.click()">Chọn file video</button>
+                        <div id="upload_file_selected" class="file-picker-list" data-i18n-text="No files selected.">Chưa chọn file nào.</div>
+                      </div>
+                      <div id="subtitle_video_hint" class="muted" style="margin-top:6px;display:none;font-weight:700;font-size:14px;color:#b45309;text-align:center">⚠️ Lưu ý: Khi bật Subtitle: chỉ chọn 1 file video.</div>
+                    </div>
+                    <div id="subtitle_box" class="field" style="margin-top:10px;display:none"><label>💬 Subtitle mềm (.srt / .vtt)</label>
+                      <div class="file-picker">
+                        <input id="subtitle_file" type="file" accept=".srt,.vtt,text/vtt,application/x-subrip" style="display:none" />
+                        <div class="file-picker-cloud" onclick="$('subtitle_file')?.click()" title="Chọn file subtitle">📝</div>
+                        <button type="button" class="file-picker-btn" onclick="$('subtitle_file')?.click()">Chọn file subtitle</button>
+                        <div id="subtitle_file_selected" class="file-picker-list" data-i18n-text="No subtitle selected.">Chưa chọn subtitle.</div>
+                      </div>
+                                          </div>
+                    <div id="upload_multi_note" class="muted" style="margin-top:6px" data-i18n-text="You can select multiple files for sequential upload queue (V1).">Có thể chọn nhiều file để xếp hàng upload tuần tự (V1).</div>
+                  </div>
+                </div>
+
+                <div class="import-box">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+                    <div class="import-box-title" style="margin:0" data-i18n-text="📦 Upload queue">📦 Hàng chờ upload</div>
+                    <button class="soft" type="button" onclick="clearUploadQueue()"><span class="ui-icon">🧹</span><span data-i18n-text="Clear waiting videos">Xoá các video chờ</span></button>
+                  </div>
+                  <div id="uploadQueueList" class="logs">Chưa có file trong hàng chờ.</div>
+                </div>
+
+                <div class="import-box" id="upload_progress_wrap" style="display:none">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+                    <div class="import-box-title" style="margin:0" data-i18n-text="Upload / processing progress">Tiến trình upload / xử lý</div>
+                    <button class="danger" type="button" onclick="cancelCurrentJob()"><span class="ui-icon">✖</span><span data-i18n-text="Cancel current video">Huỷ video hiện tại</span></button>
+                  </div>
+                  <progress id="upload_progress" value="0" max="100"></progress>
+                  <div id="upload_progress_text" class="muted" style="margin-top:8px;font-weight:700">0%</div>
+                  <div id="upload_progress_meta" class="muted" style="margin-top:4px" data-i18n-text="Waiting...">Đang chờ...</div>
+                </div>
+
+                <div class="import-box">
+                  <div class="import-box-title section-head">Log</div>
+                  <div id="logs" class="logs">Sẵn sàng.</div>
+                </div>
+              </div>
+
+              <div class="import-col" style="grid-column:span 1">
+                <div class="import-box" style="min-height:100%">
+                  <div class="import-box-title section-head" data-i18n-text="Upload configuration">Cấu hình Upload</div>
+                  <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+                    <div class="field"><label>📝 Tiêu đề</label><input id="import_title" placeholder="Tên video" /></div>
+                    <div class="field"><label>🎚️ Chất lượng HLS</label><select id="hls_quality"><option value="2160">4K</option><option value="1440">2K</option><option value="1080">1080p</option><option value="720" selected>720p</option><option value="480">480p</option></select></div>
+                    <div class="field"><label>📂 Category</label><select id="video_category"><option value="">-- Chọn category --</option></select></div>
+                  </div>
+                  <div class="field">
+                    <label>🗂️ Lưu Trữ</label>
+                    <div class="storage-grid">
+                      <label class="storage-option" style="display:none">
+                        <input type="checkbox" class="storage-chip" value="local">
+                        <span class="storage-icon"><img src="https://cdn.simpleicons.org/files" alt="Local"></span>
+                        <span class="storage-text"><span class="storage-name">Local</span><span class="storage-sub">Lưu nội bộ máy chủ</span></span>
+                      </label>
+                      <label class="storage-option" style="display:none">
+                        <input type="checkbox" class="storage-chip" value="ftp">
+                        <span class="storage-icon"><img src="https://cdn.simpleicons.org/filezilla" alt="FTP"></span>
+                        <span class="storage-text"><span class="storage-name">FTP</span><span class="storage-sub">Đẩy sang FTP server</span></span>
+                      </label>
+                      <label class="storage-option" style="display:none">
+                        <input type="checkbox" class="storage-chip" value="r2">
+                        <span class="storage-icon"><img src="https://cdn.simpleicons.org/cloudflare" alt="Cloudflare R2"></span>
+                        <span class="storage-text"><span class="storage-name">Cloudflare R2</span><span class="storage-sub">Object storage + CDN</span></span>
+                      </label>
+                      <label class="storage-option" style="display:none">
+                        <input type="checkbox" class="storage-chip" value="b2">
+                        <span class="storage-icon"><img src="https://cdn.simpleicons.org/backblaze" alt="Backblaze B2"></span>
+                        <span class="storage-text"><span class="storage-name">Backblaze B2</span><span class="storage-sub">Object storage B2</span></span>
+                      </label>
+                      <label class="storage-option" style="display:none">
+                        <input type="checkbox" class="storage-chip" value="gdrive">
+                        <span class="storage-icon"><img src="https://cdn.simpleicons.org/googledrive" alt="Google Drive"></span>
+                        <span class="storage-text"><span class="storage-name">Google Drive</span><span class="storage-sub">Lưu trên máy chủ Google</span></span>
+                      </label>
+                      <label class="storage-option" style="display:none">
+                        <input type="checkbox" class="storage-chip" value="ttb">
+                        <span class="storage-icon"><img src="https://cdn.simpleicons.org/tiktok" alt="TikTok"></span>
+                        <span class="storage-text"><span class="storage-name">TikTok</span><span class="storage-sub">Lưu trên máy chủ CDN TikTok</span></span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="muted" style="font-weight:700;color:var(--color-dark);margin:6px 0 8px">⚙️ Cấu hình video</div>
+                  <div class="row upload-config-row">
+                    <div class="field storage-option">
+                      <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+                        <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Giữ file gốc</div><div class="muted">Giữ lại file video gốc trên storage khi bật HLS</div></div>
+                        <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="keep_original" type="hidden" value="0" /><button id="keep_original_toggle" type="button" class="toggle-switch" onclick="toggleKeepOriginalSwitch()" aria-label="Bật tắt giữ file gốc"></button></span>
+                      </div>
+                    </div>
+                    <div class="field" id="original_storage_field" style="display:none;margin:0">
+                      <label>📦 Storage lưu file gốc</label>
+                      <select id="original_storage_mode">
+                        <option value="">-- Đang tải storage hợp lệ --</option>
+                      </select>
+                      <div class="muted" style="margin-top:8px"></div>
+                    </div>
+                  </div>
+                  <div class="row upload-config-row">
+                    <div class="field storage-option">
+                      <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+                        <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Tạo thumbnail</div><div class="muted">Tự động tạo thumbnail cho video</div></div>
+                        <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="create_thumbnail" type="hidden" value="1" /><button id="create_thumbnail_toggle" type="button" class="toggle-switch on" onclick="toggleThumbnailSwitch()" aria-label="Bật tắt tạo thumbnail"></button></span>
+                      </div>
+                    </div>
+                    <div class="field storage-option">
+                      <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+                        <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Chuyển Đổi HLS</div><div class="muted">Chuyển đổi video sang định dạng HLS để streaming</div></div>
+                        <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="enable_hls" type="hidden" value="1" /><button id="enable_hls_toggle" type="button" class="toggle-switch on" onclick="toggleHlsSwitch()" aria-label="Bật tắt HLS"></button></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row upload-config-row">
+                    <div class="field storage-option">
+                      <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+                        <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Đổi tên segment (.png)</div><div class="muted">Đổi đuôi segment sang .png để nguỵ trang</div></div>
+                        <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="rename_segment" type="hidden" value="0" /><button id="rename_segment_toggle" type="button" class="toggle-switch" onclick="toggleRenameSegmentSwitch()" aria-label="Bật tắt đổi tên segment"></button></span>
+                      </div>
+                    </div>
+                    <div class="field storage-option">
+                      <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+                        <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Mã hoá AES</div><div class="muted">Bật để mã hoá HLS bằng AES-128</div></div>
+                        <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="encrypt_hls" type="hidden" value="0" /><button id="encrypt_hls_toggle" type="button" class="toggle-switch" onclick="toggleEncryptHlsSwitch()" aria-label="Bật tắt mã hoá AES"></button></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field" style="margin-top:14px">
+                    <label>🚀 Thao tác</label>
+                    <div class="btns"><button class="pri" onclick="submitVideo()"><span class="ui-icon">⬆️</span>Upload Video</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card" id="section-settings">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+              <div>
+                <h3 class="card-title" style="margin-bottom:4px" data-i18n-text="Manage storage & accounts">Quản lý storage & account</h3>
+                <div class="muted" data-i18n-text="Manage your storage providers and accounts">Quản lý nhà cung cấp lưu trữ và account của bạn</div>
+              </div>
+              <div class="btns"><button id="btn_add_account" class="pri" type="button" onclick="openAccountModal()" data-i18n-text="+ Add account">+ Thêm account</button><button class="soft" type="button" onclick="renderStorageAccountPanels()" data-i18n-text="Refresh">Refresh</button></div>
+            </div>
+            <div class="settings-account-grid">
+              <div class="field mode-panel">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:800;color:var(--color-dark);font-size:14px">Local</div><div></div></div>
+                <div id="local_accounts_list" class="account-list" style="max-height:460px;overflow:auto"></div>
+              </div>
+              <div class="field mode-panel">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px"><div style="font-weight:800;color:var(--color-dark);font-size:14px">FTP</div><div class="btns"><button class="btn-mini soft" type="button" onclick="toggleModeFlag('ftp_round_robin_enabled')">Round robin: <span id="flag_ftp_round_robin_enabled">--</span></button><button class="btn-mini soft" type="button" onclick="toggleModeFlag('ftp_fallback_enabled')">Fallback: <span id="flag_ftp_fallback_enabled">--</span></button></div></div>
+                <div id="ftp_accounts_list" class="account-list" style="max-height:460px;overflow:auto"></div>
+              </div>
+              <div class="field mode-panel">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px"><div style="font-weight:800;color:var(--color-dark);font-size:14px">Google Drive</div><div class="btns"><button class="btn-mini soft" type="button" onclick="toggleModeFlag('gdrive_round_robin_enabled')">Round robin: <span id="flag_gdrive_round_robin_enabled">--</span></button><button class="btn-mini soft" type="button" onclick="toggleModeFlag('gdrive_fallback_enabled')">Fallback: <span id="flag_gdrive_fallback_enabled">--</span></button></div></div>
+                <div id="gdrive_accounts_list" class="account-list" style="max-height:460px;overflow:auto"></div>
+              </div>
+              <div class="field mode-panel">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px"><div style="font-weight:800;color:var(--color-dark);font-size:14px">Cloudflare R2</div><div class="btns"><button class="btn-mini soft" type="button" onclick="toggleModeFlag('r2_round_robin_enabled')">Round robin: <span id="flag_r2_round_robin_enabled">--</span></button><button class="btn-mini soft" type="button" onclick="toggleModeFlag('r2_fallback_enabled')">Fallback: <span id="flag_r2_fallback_enabled">--</span></button></div></div>
+                <div id="r2_accounts_list" class="account-list" style="max-height:460px;overflow:auto"></div>
+              </div>
+              <div class="field mode-panel">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px"><div style="font-weight:800;color:var(--color-dark);font-size:14px">Backblaze B2</div><div class="btns"><button class="btn-mini soft" type="button" onclick="toggleModeFlag('b2_round_robin_enabled')">Round robin: <span id="flag_b2_round_robin_enabled">--</span></button><button class="btn-mini soft" type="button" onclick="toggleModeFlag('b2_fallback_enabled')">Fallback: <span id="flag_b2_fallback_enabled">--</span></button></div></div>
+                <div id="b2_accounts_list" class="account-list" style="max-height:460px;overflow:auto"></div>
+              </div>
+              <div class="field mode-panel">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px"><div style="font-weight:800;color:var(--color-dark);font-size:14px">TikTok</div><div class="btns"><button class="btn-mini soft" type="button" onclick="toggleModeFlag('ttb_round_robin_enabled')">Round robin: <span id="flag_ttb_round_robin_enabled">--</span></button><button class="btn-mini soft" type="button" onclick="toggleModeFlag('ttb_fallback_enabled')">Fallback: <span id="flag_ttb_fallback_enabled">--</span></button></div></div>
+                <div id="ttb_accounts_list" class="account-list" style="max-height:460px;overflow:auto"></div>
+              </div>
+            </div>
+
+          </section>
+
+          <section class="card" id="section-config" data-config-current="basic" style="display:none">
+            <div class="config-mini-tabs">
+              <button class="config-mini-tab active" id="cfg-tab-basic" type="button" onclick="switchConfigTab('basic')" data-i18n-text="Basic">Cơ bản</button>
+              <button class="config-mini-tab" id="cfg-tab-video" type="button" onclick="switchConfigTab('video')" data-i18n-text="Video configuration">Cấu hình video</button>
+              <button class="config-mini-tab" id="cfg-tab-advanced" type="button" onclick="switchConfigTab('advanced')" data-i18n-text="Advanced">Nâng cao</button>
+            </div>
+            <div id="config_video_mount" class="config-video-layout" style="display:none">
+              <div id="config_video_left" class="left"></div>
+              <div id="config_video_right" class="right"></div>
+            </div>
+            <div class="settings-account-grid" style="margin-top:0;grid-template-columns:1fr 1fr 1fr;align-items:start">
+              <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+                <div id="cfg_mode_panel" class="field mode-panel config-group" data-config-tab="basic" style="margin:0;min-width:0">
+                  <div class="config-section-title" style="margin-bottom:6px"><span class="ic">🧩</span><span data-i18n-text="Enable/disable overall modes">Bật/Tắt mode tổng</span></div>
+                  <div class="muted" style="margin-bottom:10px" data-i18n-text="Disabled mode is hidden in Storage and Upload tabs.">Mode tắt sẽ bị ẩn khỏi tab Lưu Trữ và cũng không hiện trong Upload.</div>
+                  <div class="mode-toggle-grid" style="display:grid;grid-template-columns:1fr;gap:8px">
+                    <span class="chip mode-toggle-chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="account-title-wrap" style="gap:6px"><span class="platform-icon"><img src="https://cdn.simpleicons.org/files" alt="Local"></span><span>Local Storage</span></span><button id="local_mode_enabled_toggle" type="button" class="toggle-switch on" onclick="toggleModeFlag('local_mode_enabled')"></button></span>
+                    <span class="chip mode-toggle-chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="account-title-wrap" style="gap:6px"><span class="platform-icon"><img src="https://cdn.simpleicons.org/filezilla" alt="FTP"></span><span>FTP Server</span></span><button id="ftp_mode_enabled_toggle" type="button" class="toggle-switch on" onclick="toggleModeFlag('ftp_mode_enabled')"></button></span>
+                    <span class="chip mode-toggle-chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="account-title-wrap" style="gap:6px"><span class="platform-icon"><img src="https://cdn.simpleicons.org/googledrive" alt="Google Drive"></span><span>Google Drive</span></span><button id="gdrive_mode_enabled_toggle" type="button" class="toggle-switch on" onclick="toggleModeFlag('gdrive_mode_enabled')"></button></span>
+                    <span class="chip mode-toggle-chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="account-title-wrap" style="gap:6px"><span class="platform-icon"><img src="https://cdn.simpleicons.org/cloudflare" alt="R2"></span><span>Cloudflare R2</span></span><button id="r2_mode_enabled_toggle" type="button" class="toggle-switch on" onclick="toggleModeFlag('r2_mode_enabled')"></button></span>
+                    <span class="chip mode-toggle-chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="account-title-wrap" style="gap:6px"><span class="platform-icon"><img src="https://cdn.simpleicons.org/backblaze" alt="B2"></span><span>Backblaze B2</span></span><button id="b2_mode_enabled_toggle" type="button" class="toggle-switch on" onclick="toggleModeFlag('b2_mode_enabled')"></button></span>
+                    <span class="chip mode-toggle-chip" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="account-title-wrap" style="gap:6px"><span class="platform-icon"><img src="https://cdn.simpleicons.org/tiktok" alt="TikTok"></span><span>TikTok</span></span><button id="ttb_mode_enabled_toggle" type="button" class="toggle-switch" onclick="toggleModeFlag('ttb_mode_enabled')"></button></span>
+                  </div>
+                </div>
+                <div id="cfg_preset_panel" class="field mode-panel config-group" data-config-tab="basic" style="margin:0">
+                  <div class="config-section-title" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span><span class="ic">🎛️</span><span data-i18n-text="Default upload preset">Preset upload mặc định</span></span><button class="soft" type="button" onclick="openPresetModal()" data-i18n-text="Edit preset"><span class="ui-icon">✏️</span>Sửa preset</button></div>
+                  <div class="preset-summary-card" style="margin-bottom:10px">
+                    <div class="preset-summary-head">
+                      <div class="preset-summary-title"><span class="dot"></span><span data-i18n-text="Current preset summary">Tóm tắt preset đang dùng</span></div>
+                      <span class="preset-summary-badge">Default Preset</span>
+                    </div>
+                    <div id="preset_summary_text" class="preset-summary-grid">
+                      <div class="preset-summary-empty" data-i18n-text="No preset yet. Upload will use current configuration.">Chưa có preset. Upload sẽ dùng cấu hình hiện tại.</div>
+                    </div>
+                  </div>
+                </div>
+                <div id="thumb_size_panel" class="field mode-panel config-group" data-config-tab="basic" style="margin:12px 0 0 0">
+                  <div class="config-section-title"><span class="ic">🖼️</span><span>Thumbnail size</span></div>
+                  <div class="muted" style="margin-bottom:8px" data-i18n-text="Adjust auto-generated thumbnail width to balance quality and loading speed.">Chỉnh độ rộng thumbnail tạo tự động để cân bằng chất lượng và tốc độ tải.</div>
+                  <div style="display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                    <div class="field" style="margin:0;min-width:0;flex:1 1 auto"><label>Thumbnail pixel width</label><input id="thumbnail_max_width" type="number" min="240" max="1920" step="10" value="720" placeholder="720" /></div>
+                    <button class="pri" type="button" style="white-space:nowrap" onclick="saveSettings(false)">Lưu</button>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+                <div id="cfg_category_panel" class="field mode-panel config-group" data-config-tab="basic" style="margin:0;min-width:0">
+                  <div class="config-section-title"><span class="ic">🏷️</span><span data-i18n-text="Category management">Quản lý category</span></div>
+                  <div class="muted" style="margin-bottom:8px" data-i18n-text="Add/remove categories for preset, upload and library filtering.">Thêm / xoá category để dùng cho preset, upload và lọc thư viện.</div>
+                  <div class="category-manage-wrap">
+                    <div class="category-input-row"><input id="category_new_name" placeholder="Tên category mới" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addCategoryItem();}" /><button class="soft" type="button" onclick="addCategoryItem()"><span class="ui-icon">➕</span><span data-i18n-text="Add">Thêm</span></button></div>
+                    <div id="category_list" class="category-chip-list" data-i18n-text="No categories yet.">Chưa có category.</div>
+                  </div>
+                </div>
+                <div id="cfg_ffmpeg_panel" class="field mode-panel config-group" data-config-tab="video" style="margin:0;width:100%;min-width:0">
+                  <div class="config-section-title" style="margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="toggleConfigSection('ffmpeg_config_body', this)"><span><span class="ic">🎬</span><span>FFmpeg Settings</span></span><span class="muted">▸</span></div>
+                  <div id="ffmpeg_config_body" style="display:block">
+                    <div class="row">
+                      <div class="field" style="margin:0"><label>Preset</label><select id="ffmpeg_preset"><option value="ultrafast">ultrafast</option><option value="superfast">superfast</option><option value="veryfast">veryfast</option><option value="faster">faster</option><option value="fast" selected>fast</option><option value="medium">medium</option></select></div>
+                      <div class="field" style="margin:0"><label>FPS</label><input id="ffmpeg_fps" type="number" min="1" max="120" placeholder="24" value="24" /></div>
+                    </div>
+                    <div class="row">
+                      <div class="field" style="margin:0"><label>FFmpeg threads</label><input id="ffmpeg_threads" type="number" min="1" max="64" placeholder="2" value="2" /><div class="muted" id="ffmpeg_threads_hint" style="margin-top:6px" data-i18n-text="Recommended around 50–70% of CPU cores.">Khuyên dùng khoảng 50–70% số core CPU.</div></div>
+                      <div class="field" style="margin:0"><label>HLS segment duration (s)</label><input id="hls_segment_duration" type="number" min="1" max="120" placeholder="10" value="10" /></div>
+                    </div>
+                    <div class="field" style="margin:0">
+                      <div style="display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                        <div style="min-width:280px;flex:1 1 320px">
+                          <label>Scale mode</label>
+                          <select id="ffmpeg_scale_mode" onchange="syncScaleModeUi()">
+                            <option value="pad">Pad 16:9</option>
+                            <option value="fit">Keep ratio</option>
+                            <option value="auto">Auto</option>
+                          </select>
+                          <div class="muted" style="margin-top:6px" data-i18n-text="Pad 16:9 = standard frame. Keep ratio = no padding. Auto = landscape pads, portrait keeps ratio.">Pad 16:9 = khung chuẩn. Keep ratio = không thêm viền. Auto = ngang pad, dọc giữ tỷ lệ.</div>
+                        </div>
+                        <button class="pri" type="button" style="white-space:nowrap" onclick="saveSettings(false)" data-i18n-text="Save FFmpeg settings">Lưu FFmpeg Settings</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="hls_buffer_panel" class="field mode-panel config-group" data-config-tab="video" style="margin:0;width:100%;min-width:0">
+                  <div class="config-section-title" style="margin-bottom:6px"><span class="ic">⚡</span><span>HLS.js Buffer Settings</span></div>
+                  <div class="btns" style="margin-top:0"><button class="soft" type="button" onclick="applyHlsBufferPreset('safe')">An toàn</button><button class="soft" type="button" onclick="applyHlsBufferPreset('balanced')">Cân bằng</button><button class="soft" type="button" onclick="applyHlsBufferPreset('seek')">Mượt seek</button></div>
+                  <div class="row" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px">
+                    <div class="field" style="margin:0"><label>maxBufferLength (default 30)</label><input id="hlsjs_max_buffer_length" type="number" min="5" max="300" value="30" /></div>
+                    <div class="field" style="margin:0"><label>maxMaxBufferLength (default 600)</label><input id="hlsjs_max_max_buffer_length" type="number" min="30" max="1200" value="600" /></div>
+                    <div class="field" style="margin:0"><label>backBufferLength (default 30)</label><input id="hlsjs_back_buffer_length" type="number" min="0" max="300" value="30" /></div>
+                    <div class="field" style="margin:0"><label>maxBufferHole (default 0.5)</label><input id="hlsjs_max_buffer_hole" type="number" min="0" max="3" step="0.1" value="0.5" /></div>
+                  </div>
+                  <div class="switch-row" style="margin-top:8px"><span class="muted">startFragPrefetch</span><button id="hlsjs_start_prefetch_toggle" type="button" class="toggle-switch" onclick="toggleModeFlag('hlsjs_start_prefetch')"></button><span class="toggle-state" id="hlsjs_start_prefetch_text" data-i18n-text="Disabled">Đang tắt</span></div>
+                  <input id="hlsjs_start_prefetch" type="hidden" value="0" />
+                  <div class="muted" style="margin-top:6px" data-i18n-text="Applies to HLS.js players only. Not applied to JW Player engine.">Áp dụng cho player dùng HLS.js. Không áp dụng cho JW Player engine riêng.</div>
+                  <div class="btns" style="margin-top:10px;justify-content:flex-end"><button class="pri" type="button" onclick="saveSettings(false)">Lưu HLS.js Buffer Settings</button></div>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div id="player_settings_panel" class="field mode-panel config-group" data-config-tab="video" style="margin:0;width:100%">
+                  <div class="player-settings-split">
+                    <div class="player-settings-card" style="background:#fff">
+                      <div class="config-section-title" style="margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="ic">🖥️</span><span><span data-i18n-text="Player settings">Cài đặt Player</span> <span class="premium-tag" style="font-size:11px;font-weight:800;color:#7c3aed;background:#ede9fe;border:1px solid #ddd6fe;padding:2px 6px;border-radius:999px;">Premium</span></span></div>
+                      <div class="muted" style="margin-bottom:10px" data-i18n-text="Choose the default embed player. Premium supports VAST / VMAP.">Chọn player dùng cho embed toàn hệ thống. Premium có thể gắn VAST / VMAP.</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+                        <div class="field" style="margin:0;min-width:0;flex:1 1 auto">
+                          <label style="margin-bottom:6px;display:block" data-i18n-text="Default player">Player mặc định</label>
+                          <select id="embed_player_type" onchange="try{syncCustomPlayerToggleUi&&syncCustomPlayerToggleUi();}catch(e){};try{queueAutoSave&&queueAutoSave();}catch(e){}"><option value="native">Native</option><option value="plyr">Plyr</option><option value="videojs">Video.js</option><option value="jplayer">jPlayer</option><option value="jwplayer">JW Player</option><option value="custom">Custom Player</option><option value="custom_jw">Custom JW</option></select>
+                        </div>
+                      </div>
+                      <div class="row" style="grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+                        <div class="field" style="margin:0"><label>VAST Tag URL</label><input id="embed_vast_url" placeholder="https://ads.example.com/vast.xml" /></div>
+                        <div class="field" style="margin:0"><label>VMAP URL</label><input id="embed_vmap_url" placeholder="https://ads.example.com/vmap.xml" /></div>
+                      </div>
+                      <div class="muted" style="margin-top:8px" data-i18n-text="Prefer running ads with Video.js or JW Player. If both VMAP and VAST are provided, the system will prioritize VMAP.">Ưu tiên chạy ads với Video.js hoặc JW Player. Nếu nhập cả VMAP và VAST thì hệ sẽ ưu tiên VMAP.</div>
+                      <div class="row" style="grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 0 0">
+                        <div class="field" style="margin:0">
+                          <label style="margin-bottom:6px;display:block">Custom Player</label>
+                          <div class="switch-row"><button id="embed_custom_enabled_toggle" type="button" class="toggle-switch" onclick="toggleCustomPlayerMode()"></button><span class="toggle-state" id="embed_custom_enabled_text" data-i18n-text="Disabled">Đang tắt</span></div>
+                        </div>
+                        <div class="field" style="margin:0">
+                          <label style="margin-bottom:6px;display:block">Custom JW</label>
+                          <div class="switch-row"><button id="embed_custom_jw_enabled_toggle" type="button" class="toggle-switch" onclick="toggleCustomJwMode()"></button><span class="toggle-state" id="embed_custom_jw_enabled_text">Đang tắt</span></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="player-settings-card" style="align-self:start;background:#fff">
+                      <div class="config-section-title" style="margin-bottom:6px"><span class="ic">🧭</span><span>Multi Embed Server List</span></div>
+                      <div class="muted" style="margin-bottom:10px">Khu riêng để chỉnh vị trí/kiểu hiển thị server list cho Multi Embed (không phụ thuộc Custom Player).</div>
+                      <div class="row" style="grid-template-columns:1fr;gap:10px">
+                        <div class="field" style="margin:0"><label>Server list vị trí preset</label><select id="multi_server_list_position"><option value="outside-top-left">Nằm ngoài ở trên (trái)</option><option value="outside-top-center">Nằm ngoài ở trên (giữa)</option><option value="outside-top-right">Nằm ngoài ở trên (phải)</option><option value="outside-bottom-left">Nằm ngoài ở dưới (trái)</option><option value="outside-bottom-center" selected>Nằm ngoài ở dưới (giữa)</option><option value="outside-bottom-right">Nằm ngoài ở dưới (phải)</option><option value="inside-left">Nằm trong player (trái)</option><option value="inside-right">Nằm trong player (phải)</option></select></div>
+                        <div class="field" style="margin:0"><label>Label style (optional CSS)</label><input id="multi_server_list_css" placeholder=".vv-multi-server-btn{border-radius:999px}" /></div>
+                      </div>
+                      <div class="field" style="margin:8px 0 0 0"><label>Custom JS hook (optional)</label><textarea id="multi_server_list_js" rows="2" placeholder="window.onVvMultiReady && window.onVvMultiReady({setServer,getServers,root});"></textarea></div>
+                    </div>
+                  </div>
+                  <div class="btns" style="margin-top:10px;justify-content:flex-end"><button class="pri" type="button" onclick="saveSettings(false)" data-i18n-text="Save player settings">Lưu cài đặt Player</button></div>
+                  <div id="embed_custom_template_box" class="player-settings-card" style="margin-top:10px;display:none;align-self:start;background:#fff">
+                    <div class="config-section-title" style="margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="ic">🧩</span><span><span data-i18n-text="Custom Player Template">Custom Player Template</span> <span class="premium-tag" style="font-size:11px;font-weight:800;color:#7c3aed;background:#ede9fe;border:1px solid #ddd6fe;padding:2px 6px;border-radius:999px;">Premium</span></span></div>
+                    <div class="muted" style="margin-bottom:10px" data-i18n-text="Used when Custom Player is enabled. You can inject custom HTML/CSS/JS and use system variables.">Dùng khi bật Custom Player. Có thể chèn HTML/CSS/JS riêng và tận dụng các biến hệ thống.</div>
+                    <div id="custom_player_box" class="custom-player-grid">
+                      <div class="field" style="margin:0"><label>Custom HTML</label><textarea id="embed_custom_html" rows="3" placeholder='<div id="my-player"></div>' style="min-height:82px"></textarea></div>
+                      <div class="custom-player-row-2">
+                        <div class="field" style="margin:0"><label>Custom CSS</label><textarea id="embed_custom_css" rows="3" placeholder='#my-player{width:100%;height:100vh;background:#000}' style="min-height:82px"></textarea></div>
+                        <div class="field" style="margin:0"><label>Custom JS</label><textarea id="embed_custom_js" rows="3" placeholder='document.getElementById("my-player").innerHTML = "<video src=\"{{SRC}}\" controls autoplay></video>";' style="min-height:82px"></textarea></div>
+                      </div>
+                    </div>
+                    <div id="custom_jw_box" class="custom-player-grid" style="display:none;margin-top:10px;padding-top:10px;border-top:1px dashed #e5e7eb">
+                      <div class="field" style="margin:0 0 10px 0"><label>JW Library URL (customer input)</label><input id="jw_custom_library_url" placeholder="https://example.com/jwplayer.js" /></div>
+                      <div class="custom-player-row-2">
+                        <div class="field" style="margin:0"><label>JW Plugin URLs (mỗi dòng 1 link, optional)</label><textarea id="jw_custom_plugin_urls" rows="3" placeholder="https://example.com/provider.hlsjs.js&#10;https://example.com/polyfills.webvtt.js" style="min-height:82px"></textarea></div>
+                        <div class="field" style="margin:0"><label>JW Raw JS (customer handles everything)</label><textarea id="jw_custom_setup_json" rows="5" placeholder='var p=jwplayer("jw-player");\np.setup({file: window.VV_SRC, tracks: window.VV_SUB_URL ? [{file:window.VV_SUB_URL,kind:"captions",label:"Sub",default:true}] : []});' style="min-height:120px"></textarea></div>
+                      </div>
+                      <div class="muted" style="margin:0 0 6px 0">Custom JW Full: customer writes JS. System only injects <code>VV_SRC</code>, <code>VV_SUB_URL</code>, <code>VV_TITLE</code>, <code>VV_VAST_URL</code>, <code>VV_VMAP_URL</code>, <code>VV_MULTI_SOURCES</code>.</div>
+                    </div>
+                    <div class="muted" style="margin-top:8px">Custom JW Full uses runtime variables <code>window.VV_*</code>. <button class="soft" type="button" style="margin-left:8px;padding:4px 8px" onclick="openCustomJwVarHelp()">Custom JW variable guide</button></div>
+                  </div>
+                </div>
+                <div id="upload_network_panel" class="field mode-panel config-group" data-config-tab="advanced" style="margin:0">
+                  <div class="config-section-title"><span class="ic">📦</span><span data-i18n-text="Advanced upload configuration">Cấu hình Upload nâng cao</span></div>
+                  <div class="field" style="margin:0 0 10px 0"><label>Upload API Base (optional)</label><input id="upload_api_base" placeholder="https://upload.domain.com/api" /><small class="muted">Để trống = dùng /api cùng domain. Dùng khi cần upload domain riêng (DNS only).</small></div>
+                  <div class="field" style="margin:0 0 10px 0"><label>Chunk size upload (MB)</label><input id="upload_chunk_mb" type="number" min="1" max="50" step="1" placeholder="20" value="20" /><small class="muted">Khuyên dùng 4–20MB. Lớn hơn nhanh hơn nhưng dễ timeout hơn.</small></div>
+                  <div class="btns" style="justify-content:flex-end"><button class="pri" type="button" onclick="saveSettings(false)" data-i18n-text="Save upload configuration">Lưu cấu hình Upload</button></div>
+                </div>
+                <div class="field mode-panel config-group" data-config-tab="advanced" style="margin:0;align-self:start">
+                  <div class="config-section-title" style="margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="toggleConfigSection('embed_config_body', this)"><span><span class="ic">🌐</span><span><span data-i18n-text="Advanced embed configuration (Whitelist / Multi Domain / Watermark)">Cấu hình Embed nâng cao (Whitelist / Multi Domain / Watermark)</span> <span class="premium-tag" style="margin-left:8px;font-size:11px;font-weight:800;color:#7c3aed;background:#ede9fe;border:1px solid #ddd6fe;padding:2px 6px;border-radius:999px;">Premium</span></span></span><span class="muted">▸</span></div>
+                  <div id="embed_config_body" style="display:block">
+                    <div class="category-manage-wrap" style="padding:12px;margin-top:8px">
+                      <div class="row" style="grid-template-columns:1fr 1fr;gap:12px;align-items:start">
+                        <div class="field" style="margin:0;display:flex;flex-direction:column;height:100%">
+                          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+                            <div>
+                              <div style="font-size:14px;font-weight:800;color:var(--color-dark);line-height:1.35">1) Domain được phép nhúng</div>
+                              <div class="muted" style="margin-top:6px">Mỗi dòng 1 domain (vd: <b>abc.com</b>, <b>xyz.com</b>).</div>
+                            </div>
+                            <div class="switch-row" style="margin:0"><span class="muted">Strict mode</span><button id="embed_strict_mode_toggle" type="button" class="toggle-switch on" onclick="toggleModeFlag('embed_strict_mode')"></button><span class="toggle-state" id="embed_strict_mode_text">Đang bật</span></div>
+                          </div>
+                          <textarea id="embed_domain_whitelist" rows="6" placeholder="abc.com&#10;xyz.com" style="flex:1 1 auto;min-height:160px"></textarea>
+                        </div>
+                        <div class="field" style="margin:0;display:flex;flex-direction:column;height:100%">
+                          <div style="font-size:14px;font-weight:800;color:var(--color-dark);line-height:1.35">2) Multi Domain HLS (Host alias)</div>
+                          <div class="muted" style="margin-top:6px;margin-bottom:8px">Nhập các host HLS alias, mỗi dòng 1 domain. Khi lấy embed có thể chọn domain nào trong danh sách này.</div>
+                          <textarea id="embed_host_aliases" rows="6" placeholder="hls.abc.com&#10;hls.xyz.com" style="flex:1 1 auto;min-height:160px"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="category-manage-wrap" style="padding:12px;margin-top:12px">
+                      <div style="margin-bottom:8px"><b data-i18n-text="3) Domain-based watermark logo">3) Watermark logo theo domain</b></div>
+                      <div class="muted" style="margin-bottom:10px">Chọn domain + logo PNG + vị trí + thời lượng hiển thị.</div>
+                      <div class="row" style="grid-template-columns:1fr 1.3fr .9fr .9fr auto;gap:8px;align-items:end">
+                        <div class="field" style="margin:0"><label>Domain</label><input id="wm_rule_domain" placeholder="site-a.com" /></div>
+                        <div class="field" style="margin:0"><label>Logo PNG URL</label><input id="wm_rule_logo" placeholder="https://cdn.site-a.com/wm.png" /></div>
+                        <div class="field" style="margin:0"><label>Vị trí</label><select id="wm_rule_position"><option value="top-right">Góc phải</option><option value="top-left">Góc trái</option><option value="center">Giữa</option></select></div>
+                        <div class="field" style="margin:0"><label>Hiển thị</label><select id="wm_rule_duration"><option value="first15">15 giây đầu</option><option value="always">Toàn video</option></select></div>
+                        <button class="soft" type="button" onclick="addEmbedWatermarkRule()"><span class="ui-icon">➕</span>Thêm</button>
+                      </div>
+                      <div id="embed_watermark_rules_list" class="logs" style="margin-top:10px;max-height:none" data-i18n-text="No watermark rules yet.">Chưa có rule watermark.</div>
+                      <details style="margin-top:8px"><summary class="muted" style="cursor:pointer">JSON nâng cao</summary><textarea id="embed_watermark_rules_json" rows="5" placeholder='[{"domain":"site-a.com","logo":"https://cdn.site-a.com/wm.png","position":"top-right","duration_mode":"first15"}]'></textarea></details>
+                    </div>
+                    <div class="btns" style="margin-top:12px;justify-content:flex-end"><button class="pri" type="button" onclick="saveSettings(false)">Lưu cấu hình Embed + Watermark</button></div>
+                  </div>
+                </div>
+                <div id="delete_sync_panel" class="field mode-panel config-group" data-config-tab="basic" style="margin:12px 0 0 0">
+                  <div class="config-section-title"><span class="ic">🧹</span><span><span data-i18n-text="Delete sync on storage">Xoá đồng bộ trên storage</span> <span class="premium-tag" style="font-size:11px;font-weight:800;color:#7c3aed;background:#ede9fe;border:1px solid #ddd6fe;padding:2px 6px;border-radius:999px;">Premium</span></span></div>
+                  <div class="muted" style="margin-bottom:8px">Khi xoá video trong danh sách, hệ sẽ xoá luôn file/folder trên storage nếu bật.</div>
+                  <input id="delete_sync_storage" type="hidden" value="1" />
+                  <div class="switch-row"><button id="delete_sync_storage_toggle" type="button" class="toggle-switch on" onclick="toggleModeFlag('delete_sync_storage')"></button><span class="toggle-state" id="delete_sync_storage_text" data-i18n-text="Enabled">Đang bật</span></div>
+                </div>
+                <div id="patch_update_panel" class="field mode-panel config-group" data-config-tab="advanced" style="margin:12px 0 0 0">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px">
+                    <div class="config-section-title" style="margin:0"><span class="ic">🩹</span><span>Patch Update</span></div>
+                    <div id="patch_version_text" class="muted" style="font-size:12px">Version v1.0.0</div>
+                  </div>
+                  <div class="field" style="margin:0 0 10px 0"><label>Feed latest.json</label><input id="patch_feed_url" placeholder="https://updates.example.com/hls-video/latest.json" /></div>
+                  <div class="btns" style="margin-bottom:10px"><button class="soft" type="button" onclick="runPatchDryRun()">Dry run</button><button class="pri" type="button" onclick="runPatchUpdateNow()">Update ngay</button><button class="danger" type="button" onclick="runPatchRollbackNow()">Rollback gần nhất</button></div>
+                  <div class="field" style="margin:0"><label>Trạng thái / log update</label><textarea id="patch_status_log" rows="8" readonly placeholder="Chưa có log patch"></textarea></div>
+                </div>
+              </div>
+            </div>
+<div style="display:none">
+              <select id="storage_mode"><option value="local">local</option><option value="ftp">ftp</option><option value="r2">r2</option><option value="b2">b2</option><option value="gdrive">gdrive</option><option value="ttb">ttb</option></select>
+              <input id="local_path" value="storage/app/videos-local" />
+              <input id="embed_hlsjs_config_json" />
+              <input id="local_mode_enabled" value="1" />
+              <input id="ftp_hostname" />
+              <input id="ftp_port" value="21" />
+              <input id="ftp_user" />
+              <input id="ftp_pass" />
+              <input id="ftp_path" />
+              <input id="ftp_round_robin_enabled" value="1" />
+              <input id="ftp_fallback_enabled" value="1" />
+              <input id="ftp_mode_enabled" value="1" />
+              <input id="r2_bucket" />
+              <input id="r2_key" />
+              <input id="r2_secret" />
+              <input id="r2_endpoint" />
+              <input id="r2_round_robin_enabled" value="1" />
+              <input id="r2_fallback_enabled" value="1" />
+              <input id="r2_mode_enabled" value="1" />
+              <input id="b2_bucket" />
+              <input id="b2_key" />
+              <input id="b2_secret" />
+              <input id="b2_endpoint" />
+              <input id="b2_round_robin_enabled" value="1" />
+              <input id="b2_fallback_enabled" value="1" />
+              <input id="b2_mode_enabled" value="1" />
+              <textarea id="gdrive_client_id"></textarea>
+              <textarea id="gdrive_client_secret"></textarea>
+              <input id="gdrive_redirect_uri" />
+              <input id="gdrive_shared_drive_id" />
+              <select id="gdrive_mode"><option value="mydrive">mydrive</option><option value="shared">shared</option></select>
+              <input id="gdrive_round_robin_enabled" value="1" />
+              <input id="gdrive_fallback_enabled" value="1" />
+              <input id="gdrive_mode_enabled" value="1" />
+              <input id="ttb_round_robin_enabled" value="1" />
+              <input id="ttb_fallback_enabled" value="1" />
+              <input id="ttb_mode_enabled" value="0" />
+              <input id="embed_strict_mode" value="1" />
+              <input id="license_status" value="trial" />
+              <input id="license_bound_domain" value="" />
+              <input id="license_last_check_at" value="" />
+              <input id="license_plan" value="trial" />
+              <input id="license_features_json" value="{}" />
+              <input id="license_expires_at" value="" />
+              <input id="support_telegram_url" value="https://t.me/alexvan283" />
+              <input id="support_facebook_url" value="https://hlsstorage.com" />
+              <input id="ffmpeg_scale_pad_enabled" value="1" />
+            </div>
+
+            <div class="field" style="display:none"><label>ftp_accounts_json</label><textarea id="ftp_accounts_json"></textarea></div>
+            <div class="field" style="display:none"><input id="ftp_default_account_index" value="0" /></div>
+            <div class="field" style="display:none"><label>r2_accounts_json</label><textarea id="r2_accounts_json"></textarea></div>
+            <div class="field" style="display:none"><input id="r2_default_account_index" value="0" /></div>
+            <div class="field" style="display:none"><label>b2_accounts_json</label><textarea id="b2_accounts_json"></textarea></div>
+            <div class="field" style="display:none"><input id="b2_default_account_index" value="0" /></div>
+            <div class="field" style="display:none"><label>gdrive_accounts_json</label><textarea id="gdrive_accounts_json"></textarea></div>
+            <div class="field" style="display:none"><input id="gdrive_default_account_index" value="0" /></div>
+            <div class="field" style="display:none"><label>ttb_accounts_json</label><textarea id="ttb_accounts_json"></textarea></div>
+            <div class="field" style="display:none"><input id="ttb_default_account_index" value="0" /></div>
+            <div class="field" style="display:none"><label>categories_json</label><textarea id="categories_json"></textarea></div>
+          </section>
+<section class="card" id="section-account" style="display:none">
+            <div class="settings-account-grid" style="margin-top:0;grid-template-columns:1fr 1fr;align-items:start">
+              <div class="field mode-panel" style="margin:0">
+                <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%;margin-bottom:10px;flex-wrap:wrap">
+                  <div>
+                    <h3 class="card-title" style="margin:0" data-i18n-text="Admin account">Tài khoản quản trị</h3>
+                    <div class="muted" data-i18n-text="Change admin username and password.">Đổi username và mật khẩu admin.</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="field"><label data-i18n-text="Username">Username</label><input id="account_username" placeholder="admin" /></div>
+                  <div class="field"><label data-i18n-text="Current password">Mật khẩu hiện tại</label><input id="account_current_password" type="password" placeholder="••••••" /></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label data-i18n-text="New password">Mật khẩu mới</label><input id="account_new_password" type="password" placeholder="Để trống nếu không đổi" data-i18n-placeholder="Leave blank if unchanged" /></div>
+                  <div class="field"><label data-i18n-text="Confirm new password">Nhập lại mật khẩu mới</label><input id="account_new_password_confirm" type="password" placeholder="Nhập lại mật khẩu mới" data-i18n-placeholder="Confirm new password" /></div>
+                </div>
+                <div class="btns" style="justify-content:flex-end"><button class="pri" type="button" onclick="saveAdminAccount()" data-i18n-text="Save admin account">Lưu tài khoản admin</button></div>
+              </div>
+
+              <div class="field mode-panel" style="margin:0">
+                <div class="config-section-title"><span class="ic">🔐</span><span>License</span></div>
+                <div class="category-manage-wrap" style="margin-bottom:12px">
+                  <div class="preset-summary-grid" style="grid-template-columns:1fr 1fr;gap:10px">
+                    <div class="preset-summary-item">
+                      <div class="preset-summary-label" data-i18n-text="Current license">License hiện tại</div>
+                      <div class="preset-summary-value" id="license_current_key_text">Chưa có</div>
+                    </div>
+                    <div class="preset-summary-item">
+                      <div class="preset-summary-label">Gói hiện tại</div>
+                      <div class="preset-summary-value" id="license_status_text">TRIAL</div>
+                    </div>
+                    <div class="preset-summary-item">
+                      <div class="preset-summary-label">Domain</div>
+                      <div class="preset-summary-value" id="license_domain_text">Chưa có</div>
+                    </div>
+                    <div class="preset-summary-item">
+                      <div class="preset-summary-label">Expired</div>
+                      <div class="preset-summary-value" id="license_expires_text">LifeTime</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="grid-template-columns:1fr auto auto;gap:10px;align-items:end">
+                  <div class="field" style="margin:0"><label data-i18n-text="Enter / change license key">Nhập / đổi license key</label><input id="license_key_input" placeholder="XXXX-XXXX-XXXX" /></div>
+                  <div class="btns" style="margin:0"><button class="pri" type="button" onclick="activateLicenseNow()" data-i18n-text="Activate">Kích hoạt</button></div>
+                  <div class="btns" style="margin:0"><button class="soft" type="button" onclick="reloadLicenseFeaturesNow()">Reload</button></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card" id="section-history" style="display:none">
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%;margin-bottom:10px;flex-wrap:wrap">
+              <div>
+                <h3 class="card-title" style="margin:0">Log Upload</h3>
+                <div class="muted">Theo dõi video thành công và job lỗi theo dạng log dễ nhìn</div>
+              </div>
+              <div class="btns"><button class="soft" onclick="loadHistory()">Refresh</button></div>
+            </div>
+            <div id="historyList"></div>
+          </section>
+
+          <section class="card" id="section-library">
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%;margin-bottom:10px;flex-wrap:wrap">
+              <div>
+                <h3 class="card-title" style="margin:0" data-i18n-text="Video list">Danh sách video</h3>
+                <div class="muted" data-i18n-text="Uploaded video information">Thông tin video đã upload</div>
+              </div>
+              <div class="btns"><button class="soft" onclick="loadVideos()" data-i18n-text="Refresh">Refresh</button><button class="soft" id="btnMultiEmbedSelected" onclick="openMultiEmbedSelected()" disabled data-i18n-text="Multi-server embed (0)">Embed multi server (0)</button><button class="danger" id="btnDeleteSelected" onclick="deleteSelectedVideos()" disabled><span data-i18n-text="Delete selected (0)">Xoá đã chọn (0)</span></button></div>
+            </div>
+            <div class="library-filters" style="display:grid;grid-template-columns:1fr 1fr .9fr 1.2fr .9fr .9fr;gap:8px;align-items:end;margin-bottom:10px">
+              <div class="field" style="margin:0"><label data-i18n-text="📂 Category">📂 Category</label><select id="filter_category" onchange="loadVideos()"><option value="" data-i18n-text="All">Tất cả</option></select></div>
+              <div class="field" style="margin:0"><label data-i18n-text="🗂️ Mode">🗂️ Mode</label><select id="filter_mode" onchange="loadVideos()"><option value="">Tất cả</option><option value="local">Local Storage</option><option value="ftp">FTP Server</option><option value="r2">Cloudflare R2</option><option value="b2">Backblaze B2</option><option value="gdrive">Google Drive</option><option value="ttb">TikTok</option></select></div>
+              <div class="field" style="margin:0"><label data-i18n-text="📡 HLS">📡 HLS</label><select id="filter_hls" onchange="loadVideos()"><option value="">Tất cả</option><option value="1">Có HLS</option><option value="0">Không HLS</option></select></div>
+              <div class="field" style="margin:0"><label data-i18n-text="👤 Account">👤 Account</label><input id="filter_account" placeholder="Tên account..." oninput="loadVideos()" /></div>
+              <div class="field" style="margin:0"><label data-i18n-text="📅 From date">📅 Từ ngày</label><input id="filter_from" type="date" onchange="loadVideos()" /></div>
+              <div class="field" style="margin:0"><label data-i18n-text="📅 To date">📅 Đến ngày</label><input id="filter_to" type="date" onchange="loadVideos()" /></div>
+            </div>
+            <div class="video-list-wrap">
+              <div class="video-list-head video-grid-9">
+                <div class="head-center"><input id="video_select_all" type="checkbox" onchange="toggleSelectAllVideos(this.checked)" title="Chọn tất cả" /></div>
+                <div data-i18n-text="Video">Video</div>
+                <div class="head-center" style="color:#5b21b6" data-i18n-text="Category">Category</div>
+                <div class="head-center" data-i18n-text="Duration">Duration</div>
+                <div class="head-center" data-i18n-text="Source">Nguồn</div>
+                <div class="head-center" data-i18n-text="Size">Dung lượng</div>
+                <div class="head-center" data-i18n-text="Upload">Upload</div>
+                <div class="head-center" data-i18n-text="HLS">HLS</div>
+                <div class="head-center" data-i18n-text="Subtitle">Subtitle</div>
+                <div class="head-center" data-i18n-text="Original file">File gốc</div>
+                <div class="head-right" data-i18n-text="Actions">Thao tác</div>
+              </div>
+              <div id="videoList"></div>
+              <div id="videoPagination" class="video-pagination"></div>
+            </div>
+          </section>
+        </div>
+
+        <div>
+          <section class="card" id="section-player" style="display:none"></section>
+        </div>
+      </div>
+    </main>
+    </div>
+  </div>
+
+  <div id="bgJobBadge" class="bg-job-badge"><div class="t" id="bgJobBadgeTitle">Đang xử lý nền...</div><div class="m" id="bgJobBadgeMeta"></div><div class="p"><span id="bgJobBadgeBar"></span></div></div>
+  <div id="floatingQueue" style="position:fixed;right:16px;bottom:16px;z-index:1300;width:min(420px,calc(100vw - 24px));display:none">
+    <div style="border:1px solid rgba(125,156,214,.22);background:linear-gradient(180deg,rgba(14,20,34,.96),rgba(10,14,26,.98));box-shadow:0 18px 40px rgba(4,10,24,.38);backdrop-filter:blur(14px);border-radius:18px;overflow:hidden;color:#ecf4ff">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(123,148,198,.14)">
+        <div id="floatingQueueTitle" style="font-weight:800;font-size:13px">Uploading (0)</div>
+        <button type="button" onclick="toggleFloatingQueue()" style="border:none;background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:4px 10px;cursor:pointer">↕</button>
+      </div>
+      <div id="floatingQueueBody" style="max-height:42vh;overflow:auto;padding:8px 12px"></div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="accountModal" onclick="if(event.target===this) closeAccountModal()">
+    <div class="player-modal-card" style="max-width:760px">
+      <div class="player-modal-head">
+        <div><div class="card-title" style="margin:0" data-i18n-text="Add / edit account">Thêm / sửa account</div><div class="muted" data-i18n-text="Select a platform first, form will switch accordingly">Chọn nền tảng trước, form sẽ đổi theo nền tảng</div></div>
+        <div class="btns"><button class="danger" type="button" onclick="closeAccountModal()" data-i18n-text="Close">Đóng</button></div>
+      </div>
+      <input type="hidden" id="account_edit_idx" value="" />
+      <div class="field"><label data-i18n-text="Platform">Nền tảng</label><select id="account_platform" onchange="renderAccountFormFields()"><option value="" data-i18n-text="-- Select platform --">-- Chọn nền tảng --</option><option value="local">Local Storage</option><option value="ftp">FTP Server</option><option value="r2">Cloudflare R2</option><option value="b2">Backblaze B2</option><option value="gdrive">Google Drive</option><option value="ttb">TikTok</option></select></div>
+      <div id="account_form_fields"></div>
+      <div class="btns" style="margin-top:10px"><button class="pri" type="button" onclick="saveAccountFromModal()" data-i18n-text="Save account">Lưu account</button></div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="presetModal" onclick="if(event.target===this) closePresetModal()">
+    <div class="player-modal-card" style="max-width:980px">
+      <div class="player-modal-head">
+        <div><div class="card-title" style="margin:0" data-i18n-text="Edit default upload preset">Sửa preset upload mặc định</div><div class="muted" id="preset_trial_hint" data-i18n-text="Layout matches upload configuration for quick editing">Layout giống cấu hình upload để chỉnh nhanh</div></div>
+        <div class="btns"><button class="danger" type="button" onclick="closePresetModal()">Đóng</button></div>
+      </div>
+      <div class="import-box" style="min-height:100%">
+        <div class="import-box-title">Cấu hình video (Preset)</div>
+        <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="field"><label>🎚️ Chất lượng HLS</label><select id="preset_hls_quality"><option value="2160">4K</option><option value="1440">2K</option><option value="1080">1080p</option><option value="720">720p</option><option value="480">480p</option></select></div>
+          <div class="field"><label>📂 Category</label><select id="preset_category"><option value="">-- Chọn category --</option></select></div>
+          <div class="field"></div>
+        </div>
+        <div class="field">
+          <label>🗂️ Lưu Trữ</label>
+          <div class="storage-grid">
+            <label class="storage-option"><input type="checkbox" class="preset-storage-chip" value="local"><span class="storage-icon"><img src="https://cdn.simpleicons.org/files" alt="Local"></span><span class="storage-text"><span class="storage-name">Local</span><span class="storage-sub">Lưu nội bộ máy chủ</span></span></label>
+            <label class="storage-option"><input type="checkbox" class="preset-storage-chip" value="ftp"><span class="storage-icon"><img src="https://cdn.simpleicons.org/filezilla" alt="FTP"></span><span class="storage-text"><span class="storage-name">FTP</span><span class="storage-sub">Đẩy sang FTP server</span></span></label>
+            <label class="storage-option"><input type="checkbox" class="preset-storage-chip" value="r2"><span class="storage-icon"><img src="https://cdn.simpleicons.org/cloudflare" alt="Cloudflare R2"></span><span class="storage-text"><span class="storage-name">Cloudflare R2</span><span class="storage-sub">Object storage + CDN</span></span></label>
+            <label class="storage-option"><input type="checkbox" class="preset-storage-chip" value="b2"><span class="storage-icon"><img src="https://cdn.simpleicons.org/backblaze" alt="Backblaze B2"></span><span class="storage-text"><span class="storage-name">Backblaze B2</span><span class="storage-sub">Object storage Backblaze</span></span></label>
+            <label class="storage-option"><input type="checkbox" class="preset-storage-chip" value="gdrive"><span class="storage-icon"><img src="https://cdn.simpleicons.org/googledrive" alt="Google Drive"></span><span class="storage-text"><span class="storage-name">Google Drive</span><span class="storage-sub">Lưu trên máy chủ Google</span></span></label>
+            <label class="storage-option"><input type="checkbox" class="preset-storage-chip" value="ttb"><span class="storage-icon"><img src="https://cdn.simpleicons.org/tiktok" alt="TikTok"></span><span class="storage-text"><span class="storage-name">TikTok</span><span class="storage-sub">Upload Creative bằng session</span></span></label>
+          </div>
+        </div>
+        <div class="muted" style="font-weight:700;color:var(--color-dark);margin:6px 0 8px">⚙️ Cấu hình video</div>
+        <div class="row">
+          <div class="field storage-option">
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+              <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)" data-i18n-text="Keep original file">Giữ file gốc</div><div class="muted" data-i18n-text="Keep the original video file according to the preset">Giữ lại file video gốc theo preset</div></div>
+              <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="preset_keep_original" type="hidden" value="0" /><button id="preset_keep_original_toggle" type="button" class="toggle-switch" onclick="togglePresetKeepOriginalSwitch()"></button></span>
+            </div>
+          </div>
+          <div class="field" id="preset_original_storage_field" style="display:none;margin:0">
+            <label>📦 Storage lưu file gốc</label>
+            <select id="preset_original_storage_mode"><option value="">-- Đang tải storage hợp lệ --</option></select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field storage-option">
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+              <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Tạo thumbnail</div><div class="muted">Tự động tạo thumbnail cho video</div></div>
+              <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="preset_create_thumbnail" type="hidden" value="1" /><button id="preset_create_thumbnail_toggle" type="button" class="toggle-switch on" onclick="togglePresetThumbnailSwitch()"></button></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field storage-option">
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+              <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Chuyển đổi HLS</div><div class="muted">Chuyển đổi video sang định dạng HLS để streaming</div></div>
+              <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="preset_enable_hls" type="hidden" value="1" /><button id="preset_enable_hls_toggle" type="button" class="toggle-switch on" onclick="togglePresetEnableHlsSwitch()"></button></span>
+            </div>
+          </div>
+          <div class="field storage-option">
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+              <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Đổi tên segment (.png)</div><div class="muted">Đổi đuôi segment sang .png để nguỵ trang</div></div>
+              <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="preset_rename_segment" type="hidden" value="0" /><button id="preset_rename_segment_toggle" type="button" class="toggle-switch" onclick="togglePresetRenameSegmentSwitch()"></button></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field storage-option">
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;width:100%">
+              <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--color-dark)">Mã hoá AES</div><div class="muted">Bật để mã hoá HLS bằng AES-128</div></div>
+              <span style="display:flex;align-items:center;justify-content:flex-end;min-width:56px"><input id="preset_encrypt_hls" type="hidden" value="0" /><button id="preset_encrypt_hls_toggle" type="button" class="toggle-switch" onclick="togglePresetEncryptHlsSwitch()"></button></span>
+            </div>
+          </div>
+          <div class="field" style="visibility:hidden"></div>
+        </div>
+      </div>
+      <div class="btns" style="margin-top:10px"><button class="soft" type="button" onclick="loadCurrentUploadToPresetEditor()">Lấy từ form upload</button><button class="pri" type="button" onclick="savePresetFromConfig();closePresetModal()">Lưu preset</button></div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="deleteModal" onclick="if(event.target===this) closeDeleteModal()">
+    <div class="player-modal-card" style="max-width:520px">
+      <div style="text-align:center;margin-bottom:12px;padding:10px 12px;border:1px solid var(--color-defaultBorder);border-radius:12px;background:var(--color-lightprimary)">
+        <div class="card-title" style="margin:0"><span class="ui-icon">🗑️</span> <span data-i18n-text="Confirm delete video">Xác nhận xoá video</span></div>
+      </div>
+      <div class="muted" style="line-height:1.6;text-align:center" data-i18n-text="The video will be removed from the list and can also be deleted from storage if delete sync is enabled.">Video sẽ bị xoá khỏi danh sách và có thể xoá luôn trên storage nếu bật đồng bộ xoá.</div>
+      <div id="deleteModalText" class="muted" style="line-height:1.6;text-align:center;margin-top:8px;color:var(--color-dark)">Bạn có chắc muốn xoá video này không?</div>
+      <div class="btns" style="margin-top:16px;justify-content:flex-end"><button class="danger" onclick="confirmDeleteVideo()">Xoá video</button><button class="soft" onclick="closeDeleteModal()">Huỷ</button></div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="categoryModal" onclick="if(event.target===this) closeCategoryModal()">
+    <div class="player-modal-card" style="max-width:520px">
+      <div class="player-modal-head">
+        <div><div class="card-title" style="margin:0" data-i18n-text="🏷️ Change category">🏷️ Đổi category</div><div class="muted" data-i18n-text="Quickly update video category">Cập nhật nhanh category cho video</div></div>
+        <div class="btns"><button class="danger" type="button" onclick="closeCategoryModal()">Đóng</button></div>
+      </div>
+      <div class="field"><label>Category</label><select id="change_video_category"><option value="">-- Không chọn --</option></select></div>
+      <div class="btns" style="justify-content:flex-end"><button class="soft" type="button" onclick="closeCategoryModal()">Huỷ</button><button class="pri" type="button" onclick="saveVideoCategoryChange()">Lưu category</button></div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="playerModal" onclick="if(event.target===this) closePlayerModal()">
+    <div class="player-modal-card">
+      <div class="player-modal-head">
+        <div>
+          <div class="card-title" style="margin:0" data-i18n-text="Player / Embed">Player / Embed</div>
+          <div class="muted" data-i18n-text="Quickly preview the video inside the popup">Xem nhanh video ngay trong popup</div>
+        </div>
+        <div class="btns"><button class="danger" onclick="closePlayerModal()" data-i18n-text="Close">Đóng</button></div>
+      </div>
+      <div class="player-wrap" id="playerWrap"><video id="videoPlayerModal" controls playsinline style="display:none"></video><iframe id="playerEmbedFrame" style="width:100%;height:min(52vh,480px);border:0;border-radius:12px;background:#000" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+      <div class="player-info-grid">
+        <div class="field full" style="margin:0"><label data-i18n-text="Embed domain">Domain nhúng</label><select id="embedHostSelect" onchange="refreshEmbedHostSelection()"><option value="" data-i18n-text="Current domain">Domain hiện tại</option></select></div>
+        <div class="field" style="margin:0"><label data-i18n-text="Embed URL">Embed URL</label><div class="inline-copy"><input id="embedPageLink" readonly placeholder="Link trang embed" /><button class="soft" type="button" onclick="copyEmbedPageLink()" data-i18n-text="Copy">Copy</button></div></div>
+        <div class="field" style="margin:0"><label data-i18n-text="m3u8 / play link">Link m3u8 / play</label><div class="inline-copy"><input id="embedLink" readonly placeholder="Link m3u8 / play" /><button class="soft" type="button" onclick="copyEmbedLink()" data-i18n-text="Copy">Copy</button></div></div>
+        <div class="field full" style="margin:0"><label data-i18n-text="Iframe code">Code iframe</label><div class="switch-row" style="margin:0 0 8px 0;gap:16px;align-items:center;flex-wrap:wrap"><label style="display:inline-flex;align-items:center;gap:6px"><input id="iframeMuteToggle" type="checkbox" onchange="refreshCurrentIframeCode()" /><span class="muted">Mute</span></label><label style="display:inline-flex;align-items:center;gap:6px"><input id="iframeAutoplayToggle" type="checkbox" onchange="refreshCurrentIframeCode()" /><span class="muted">Autoplay</span></label></div><div class="inline-copy" style="align-items:flex-start"><textarea id="iframeCode" rows="3" readonly placeholder="Code iframe để chèn website"></textarea><div class="btns" style="flex-direction:column;align-items:stretch;min-width:130px"><button class="soft" type="button" onclick="copyIframeCode()" data-i18n-text="Copy iframe">Copy iframe</button><button class="soft" type="button" onclick="copyFullEmbedCode()" data-i18n-text="Copy full">Copy full</button></div></div><textarea id="iframeCodeFull" rows="4" readonly style="display:none"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="multiEmbedModal" onclick="if(event.target===this) closeMultiEmbedModal()">
+    <div class="player-modal-card" style="max-width:1280px;width:min(96vw,1280px);max-height:94vh;overflow:auto">
+      <div class="player-modal-head">
+        <div>
+          <div class="card-title" style="margin:0" data-i18n-text="Multi-server embed">Embed Multi Server</div>
+          <div class="muted" data-i18n-text="Preview + embed code for multiple servers">Preview + code nhúng nhiều server</div>
+        </div>
+        <div class="btns"><button class="danger" onclick="closeMultiEmbedModal()" data-i18n-text="Close">Đóng</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1.75fr) minmax(360px,.7fr);gap:14px;align-items:start">
+        <div class="player-wrap" id="multiPlayerWrap" style="margin:0"><iframe id="multiPlayerEmbedFrame" style="display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;border-radius:12px;background:#000" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="player-info-grid" style="margin:0;display:flex;flex-direction:column;gap:10px;max-height:min(78vh,720px);overflow:auto;padding-right:2px">
+          <div class="field full" style="margin:0"><label data-i18n-text="Embed domain">Domain nhúng</label><select id="multiEmbedHostSelect" onchange="refreshMultiEmbedHostSelection()"><option value="" data-i18n-text="Current domain">Domain hiện tại</option></select></div>
+          <div class="field full" style="margin:0"><label data-i18n-text="Embed URL list">Danh sách Embed URL</label><textarea id="multiEmbedUrlList" rows="6" readonly placeholder="Mỗi dòng 1 embed URL"></textarea></div>
+          <div class="field full" style="margin:0"><label data-i18n-text="m3u8 / play link list">Danh sách m3u8 / play link</label><textarea id="multiPlayUrlList" rows="6" readonly placeholder="Mỗi dòng 1 play URL"></textarea></div>
+          <div class="field full" style="margin:0"><label data-i18n-text="Iframe code">Code multi embed</label><div class="switch-row" style="margin:0 0 8px 0;gap:16px;align-items:center;flex-wrap:wrap"><label style="display:inline-flex;align-items:center;gap:6px"><input id="multiIframeMuteToggle" type="checkbox" onchange="rebuildMultiEmbedPreview()" /><span class="muted">Mute</span></label><label style="display:inline-flex;align-items:center;gap:6px"><input id="multiIframeAutoplayToggle" type="checkbox" onchange="rebuildMultiEmbedPreview()" /><span class="muted">Autoplay</span></label></div><div class="inline-copy" style="align-items:flex-start"><textarea id="multiIframeCode" rows="4" readonly placeholder="Code multi embed"></textarea><div class="btns" style="flex-direction:column;align-items:stretch;min-width:130px"><button class="soft" type="button" onclick="copyMultiIframeCode()" data-i18n-text="Copy iframe">Copy iframe</button><button class="soft" type="button" onclick="copyMultiFullEmbedCode()" data-i18n-text="Copy full">Copy full</button></div></div><textarea id="multiIframeCodeFull" rows="4" readonly style="display:none"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="customJwVarHelpModal" onclick="if(event.target===this) closeCustomJwVarHelp()">
+    <div class="player-modal-card" style="max-width:860px">
+      <div class="player-modal-head">
+        <div>
+          <div class="card-title" style="margin:0">Custom JW variable guide</div>
+          <div class="muted">Custom JW Full uses runtime variables <code>window.VV_*</code>, customer writes JS to handle player/sub/multi.</div>
+        </div>
+        <div class="btns"><button class="danger" type="button" onclick="closeCustomJwVarHelp()">Đóng</button></div>
+      </div>
+      <div class="logs" style="max-height:min(70vh,680px);overflow:auto;line-height:1.6">
+        <div><b>Biến runtime có sẵn</b></div>
+        <div>• <code>window.VV_SRC</code>: link video hiện tại</div>
+        <div>• <code>window.VV_SUB_URL</code>: link subtitle hiện tại</div>
+        <div>• <code>window.VV_TITLE</code>: tiêu đề video</div>
+        <div>• <code>window.VV_VAST_URL</code>: link VAST hiện tại</div>
+        <div>• <code>window.VV_VMAP_URL</code>: link VMAP hiện tại</div>
+        <div>• <code>window.VV_MULTI_SOURCES</code>: mảng nhiều nguồn/server</div>
+        <div>• <code>window.VV_CURRENT_INDEX</code>: index nguồn hiện tại</div>
+        <div>• <code>window.VV_CURRENT_LABEL</code>: label nguồn hiện tại</div>
+        <div style="margin-top:12px"><b>Ví dụ tối thiểu</b></div>
+        <pre style="white-space:pre-wrap;background:#0f172a;color:#e2e8f0;padding:12px;border-radius:12px;overflow:auto;margin:8px 0 0"><code>var p = jwplayer("jw-player");
+p.setup({
+  file: window.VV_SRC,
+  tracks: window.VV_SUB_URL ? [
+    { file: window.VV_SUB_URL, kind: "captions", label: "Sub", "default": true }
+  ] : [],
+  controls: true,
+  stretching: "uniform"
+});</code></pre>
+        <div style="margin-top:12px"><b>Ví dụ multi source</b></div>
+        <pre style="white-space:pre-wrap;background:#0f172a;color:#e2e8f0;padding:12px;border-radius:12px;overflow:auto;margin:8px 0 0"><code>var list = Array.isArray(window.VV_MULTI_SOURCES) ? window.VV_MULTI_SOURCES : [];
+var current = list[window.VV_CURRENT_INDEX] || list[0] || null;
+
+jwplayer("jw-player").setup({
+  file: current && current.url ? current.url : window.VV_SRC,
+  controls: true
+});</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="customVarHelpModal" onclick="if(event.target===this) closeCustomVarHelp()">
+    <div class="player-modal-card" style="max-width:860px">
+      <div class="player-modal-head">
+        <div>
+          <div class="card-title" style="margin:0" data-i18n-text="Custom Player variable guide">Hướng dẫn biến Custom Player</div>
+          <div class="muted" data-i18n-text="How to use SRC / ads / watermark in the custom template">Cách dùng SRC / ads / watermark trong template custom</div>
+        </div>
+        <div class="btns"><button class="danger" type="button" onclick="closeCustomVarHelp()" data-i18n-text="Close">Đóng</button></div>
+      </div>
+      <div class="logs" style="max-height:min(70vh,680px);overflow:auto;line-height:1.6">
+        <div><b>1) Biến cơ bản</b></div>
+        <div>• <code>{{SRC}}</code>: link video / HLS để player custom phát video</div>
+        <div>• <code>{{SUB_URL}}</code>: link subtitle tương ứng của video hiện tại (nếu có)</div>
+        <div>• <code>{{TITLE}}</code>: tiêu đề video hiện tại</div>
+        <div>• <code>{{VAST_URL}}</code>: link VAST hiện đang cấu hình</div>
+        <div>• <code>{{VMAP_URL}}</code>: link VMAP hiện đang cấu hình</div>
+        <div>• <code>{{MULTI_SOURCES_JSON}}</code>: danh sách source server cho multi embed (JSON)</div>
+        <div>• <code>{{MULTI_CURRENT_INDEX}}</code>: index server hiện tại (multi embed)</div>
+        <div>• <code>{{MULTI_CURRENT_LABEL}}</code>: nhãn server hiện tại (multi embed)</div>
+        <div style="margin-top:10px"><b>2) Biến watermark theo domain</b></div>
+        <div>• <code>{{WATERMARK_ENABLED}}</code>: <b>1</b> nếu domain hiện tại có watermark, ngược lại là <b>0</b></div>
+        <div>• <code>{{WATERMARK_LOGO}}</code>: URL logo watermark</div>
+        <div>• <code>{{WATERMARK_POSITION}}</code>: vị trí watermark, ví dụ <b>top-right</b>, <b>top-left</b>, <b>center</b></div>
+        <div>• <code>{{WATERMARK_MODE}}</code>: chế độ hiển thị, ví dụ <b>always</b> hoặc <b>first15</b></div>
+        <div>• <code>{{WATERMARK_SECONDS}}</code>: số giây watermark hiện nếu dùng mode theo thời lượng</div>
+        <div style="margin-top:10px"><b>3) Ví dụ nhanh</b></div>
+        <pre style="white-space:pre-wrap;background:#0f172a;color:#e2e8f0;padding:12px;border-radius:12px;overflow:auto;margin:8px 0 0"><code>&lt;div id="wrap" style="position:relative;width:100%;height:100vh;background:#000"&gt;
+  &lt;video id="v" src="{{SRC}}" controls playsinline style="width:100%;height:100%"&gt;
+    &lt;track kind="subtitles" srclang="vi" label="Sub" src="{{SUB_URL}}" default&gt;
+  &lt;/video&gt;
+  &lt;img id="wm" src="{{WATERMARK_LOGO}}" style="position:absolute;max-width:120px;display:none" /&gt;
+&lt;/div&gt;
+&lt;script&gt;
+  const wm = document.getElementById('wm');
+  const pos = '{{WATERMARK_POSITION}}';
+  const mode = '{{WATERMARK_MODE}}';
+  const secs = Number('{{WATERMARK_SECONDS}}' || 15);
+  const enabled = '{{WATERMARK_ENABLED}}' === '1';
+
+  if (enabled && wm) {
+    if (pos === 'top-left') { wm.style.top='12px'; wm.style.left='12px'; }
+    else if (pos === 'center') { wm.style.top='50%'; wm.style.left='50%'; wm.style.transform='translate(-50%,-50%)'; }
+    else { wm.style.top='12px'; wm.style.right='12px'; }
+
+    if (mode === 'always') {
+      wm.style.display = 'block';
+    } else {
+      wm.style.display = 'block';
+      setTimeout(() =&gt; wm.style.display = 'none', secs * 1000);
+    }
+  }
+&lt;/script&gt;</code></pre>
+        <div style="margin-top:12px"><b>4) Ví dụ ads VAST / VMAP</b></div>
+        <pre style="white-space:pre-wrap;background:#0f172a;color:#e2e8f0;padding:12px;border-radius:12px;overflow:auto;margin:8px 0 0"><code>&lt;script&gt;
+  const vast = '{{VAST_URL}}';
+  const vmap = '{{VMAP_URL}}';
+
+  if (vmap) {
+    console.log('Dùng VMAP:', vmap);
+    // truyền vmap vào ad SDK / player custom của anh
+  } else if (vast) {
+    console.log('Dùng VAST:', vast);
+    // truyền vast vào ad SDK / player custom của anh
+  }
+&lt;/script&gt;</code></pre>
+        <div class="muted" style="margin-top:10px">Lưu ý: template custom chỉ nhận biến và tự xử lý hiển thị. Nếu muốn hiện subtitle thì chèn thẻ <code>&lt;track src="{{SUB_URL}}" ...&gt;</code> vào player custom. Nếu muốn logo/ads hiện đẹp thì phần HTML/CSS/JS của khách phải dùng các biến này.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="player-modal" id="originalFileModal" onclick="if(event.target===this) closeOriginalFileModal()">
+    <div class="player-modal-card" style="max-width:720px">
+      <div class="player-modal-head">
+        <div>
+          <div class="card-title" style="margin:0" data-i18n-text="📦 Original file details">📦 Thông tin file gốc</div>
+          <div class="muted">Chi tiết storage của file gốc đã lưu</div>
+        </div>
+        <div class="btns"><button class="danger" type="button" onclick="closeOriginalFileModal()">Đóng</button></div>
+      </div>
+      <div class="settings-account-grid" style="margin-top:0">
+        <div class="field mode-panel" style="margin:0"><div class="account-meta-label">Mode</div><div id="original_file_mode" class="account-meta-value">-</div></div>
+        <div class="field mode-panel" style="margin:0"><div class="account-meta-label">Account</div><div id="original_file_account" class="account-meta-value">-</div></div>
+        <div class="field mode-panel" style="margin:0;grid-column:1 / -1"><div class="account-meta-label">Key / Path</div><div id="original_file_key" class="account-meta-value">-</div></div>
+        <div class="field mode-panel" style="margin:0;grid-column:1 / -1"><div class="account-meta-label">URL</div><div class="btns" style="justify-content:space-between;align-items:center;gap:10px"><input id="original_file_url" readonly placeholder="Không có URL" style="flex:1" /><button id="btn_open_original_url" class="soft" type="button" onclick="openOriginalFileUrl()" style="display:none">Đi đến</button></div></div>
+        <div class="field mode-panel" style="margin:0;grid-column:1 / -1"><div class="account-meta-label">Lỗi</div><div id="original_file_error" class="account-meta-value">-</div></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/app-i18n.js?v=20260427_i18n4"></script>
+<script src="/assets/js/app-view.js?v=20260426_view1"></script>
+<script src="/assets/js/app-page-videos.js?v=20260427_videos3"></script>
+<script src="/assets/js/app-page-account.js?v=20260502_account_warn1"></script>
+<script src="/assets/js/app-page-storage.js?v=20260426_storage1"></script>
+<script src="/assets/js/app-page-settings.js?v=20260429_settings4"></script>
+<script src="/assets/js/app-page-config.js?v=20260426_config1"></script>
+<script src="/assets/js/app-modal-player.js?v=20260429_modal6"></script>
+<script src="/assets/js/app-helpers.js?v=20260427_helpers5"></script>
+<script src="/assets/js/app-preset-category.js?v=20260427_pc2"></script>
+<script src="/assets/js/app-auth-admin.js?v=20260429_auth24"></script>
+<script src="/assets/js/app-runtime-queue.js?v=20260429_queue63"></script>
+<script src="/assets/js/app-boot.js?v=20260427_boot2"></script>
+
+</body>
+</html>

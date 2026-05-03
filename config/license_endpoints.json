@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "verify": [
+    "https://vlicense.hlsstorage.com/api/license/verify"
+  ],
+  "auto_trial": [
+    "https://vlicense.hlsstorage.com/api/license/auto-trial"
+  ],
+  "timeout": 12,
+  "connect_timeout": 6
+}
