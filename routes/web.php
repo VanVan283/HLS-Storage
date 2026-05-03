@@ -14,6 +14,10 @@
 */
 
 $router->get('/', function () {
+    return redirect('/app');
+});
+
+$router->get('/health', function () {
     return response()->json(['message' => 'HLS service is running']);
 });
 
