@@ -1,26 +1,50 @@
-# Lumen PHP Framework
+# HLS STORAGE
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel/lumen-framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/lumen-framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://img.shields.io/packagist/l/laravel/lumen)](https://packagist.org/packages/laravel/lumen-framework)
+Cloud Video Platform for import/upload, HLS processing, embed playback, and multi-storage routing.
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
+## Requirements
 
-> **Note:** In the years since releasing Lumen, PHP has made a variety of wonderful performance improvements. For this reason, along with the availability of [Laravel Octane](https://laravel.com/docs/octane), we no longer recommend that you begin new projects with Lumen. Instead, we recommend always beginning new projects with [Laravel](https://laravel.com).
+- PHP 8.3
+- ionCube Loader (required)
+- MySQL/MariaDB
+- FFmpeg + FFprobe
+- Web server (Nginx/Caddy/Apache)
 
-## Official Documentation
+## Quick Setup
 
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
+1. Clone source and install dependencies
+2. Copy env template:
+   - `.env.example` -> `.env`
+3. Configure database in `.env`
+4. Import database:
+   - `hlsvideo_database.sql`
+5. Configure license endpoints in:
+   - `config/license_endpoints.json`
 
-## Contributing
+Default license endpoints:
+- `https://vlicense.hlsstorage.com/api/license/verify`
+- `https://vlicense.hlsstorage.com/api/license/auto-trial`
 
-Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Notes
 
-## Security Vulnerabilities
+- This release ships with clean database seed (admin kept, runtime data removed).
+- Storage account credentials are intentionally empty in clean DB.
+- Embed whitelist/alias and custom JW settings are intentionally reset in clean DB.
 
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+## Main Components
 
-## License
+- `app/Http/Controllers/VideoController.php` - core API, playback, embed, license flow
+- `app/Services/VideoImporter.php` - import/upload pipeline
+- `scripts/process_upload_job.php` - async upload worker
+- `app/Services/Storage/*` - storage adapters (R2/B2/GDrive/FTP/TikTok)
 
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Security
+
+- Keep `.env` private
+- Restrict DB credentials
+- Do not expose internal logs or backup dumps publicly
+
+## Support
+
+- Website: https://hlsstorage.com
+- Telegram: https://t.me/alexvan283
